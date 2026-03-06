@@ -1,0 +1,13 @@
+[network]
+name = "testnet"
+node_rpc_address = "https://api.testnet.hiro.so"
+
+[accounts.deployer]
+# Set DEPLOYER_MNEMONIC in .env.local before running deploy-contracts.sh
+# Get testnet STX from: https://explorer.hiro.so/sandbox/faucet?chain=testnet
+mnemonic = ""
+balance = 100_000_000_000
+
+[accounts.wallet_1]
+mnemonic = ""
+balance = 100_000_000_000

@@ -1,0 +1,22 @@
+[project]
+name = "paystream-contracts"
+description = "PayStream x402 smart contracts for Bitcoin-native micropayments"
+authors = ["PayStream Team"]
+
+[contracts.paystream-escrow]
+path = "contracts/paystream-escrow.clar"
+
+[contracts.paystream-vault]
+path = "contracts/paystream-vault.clar"
+
+[contracts.paystream-registry]
+path = "contracts/paystream-registry.clar"
+
+[repl.analysis]
+passes = ["check_checker"]
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false

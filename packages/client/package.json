@@ -1,0 +1,38 @@
+{
+  "name": "@paystream/client",
+  "version": "0.1.0",
+  "description": "PayStream x402 client — automatic micropayments and AgentWallet for AI on Stacks",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michojekunle/paystream"
+  },
+  "keywords": ["x402", "stacks", "agent-wallet", "micropayments", "ai-payments", "axios"],
+  "publishConfig": { "access": "public" },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@paystream/core": "workspace:*",
+    "@stacks/transactions": "^6.17.0",
+    "@stacks/network": "^6.17.0",
+    "axios": "^1.7.0",
+    "x402-stacks": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

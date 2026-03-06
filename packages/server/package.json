@@ -1,0 +1,40 @@
+{
+  "name": "@paystream/server",
+  "version": "0.1.0",
+  "description": "PayStream x402 Express middleware — production paywall for Stacks Bitcoin micropayments",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michojekunle/paystream"
+  },
+  "keywords": ["x402", "stacks", "express", "middleware", "paywall", "micropayments"],
+  "publishConfig": { "access": "public" },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@paystream/core": "workspace:*",
+    "x402-stacks": "^1.0.0"
+  },
+  "peerDependencies": {
+    "express": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "express": "^4.21.0",
+    "typescript": "^5.7.0"
+  }
+}

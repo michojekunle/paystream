@@ -1,0 +1,16 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "pnpm build"
+startCommand = "node dist/index.js"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[variables]
+PORT = "3402"
+STACKS_NETWORK = "testnet"
+STACKS_API_URL = "https://api.testnet.hiro.so"
+NODE_ENV = "production"

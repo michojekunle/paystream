@@ -1,0 +1,348 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PayStream Dashboard — Design
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+    --accent: #d4922a;
+    --accent-light: #e8a94b;
+    --accent-dim: rgba(212, 146, 42, 0.12);
+    --accent-border: rgba(212, 146, 42, 0.25);
+    --bg: #0a0a09;
+    --bg-card: #111110;
+    --bg-subtle: #161614;
+    --fg: #e8e5de;
+    --fg-muted: #9e9a90;
+    --fg-dim: #6b6860;
+    --border: rgba(255, 255, 255, 0.06);
+    --green: #57ab5a;
+    --red: #e5534b;
+    --blue: #539bf5;
+    --font-sans: var(--font-outfit), system-ui, sans-serif;
+    --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+    --r-md: 8px;
+    --r-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-logo span {
+    color: var(--accent);
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--r-md);
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    transition: all 150ms;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--accent-dim);
+    color: var(--fg);
+}
+
+.sidebar a.active {
+    border-left: 2px solid var(--accent);
+}
+
+/* Main */
+.main {
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.main-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.main-header .badge {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: rgba(87, 171, 90, 0.12);
+    color: var(--green);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Stats row */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    padding: 20px;
+    border-radius: var(--r-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+}
+
+.stat-val {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.stat-val.accent {
+    color: var(--accent);
+}
+
+.stat-val.green {
+    color: var(--green);
+}
+
+.stat-change {
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+.stat-change.up {
+    color: var(--green);
+}
+
+.stat-change.down {
+    color: var(--red);
+}
+
+/* Charts area */
+.panels {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.panel {
+    padding: 24px;
+    border-radius: var(--r-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+}
+
+.panel-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-subtitle {
+    font-size: 0.7rem;
+    color: var(--fg-dim);
+}
+
+/* Chart bars */
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 160px;
+}
+
+.chart-bar {
+    flex: 1;
+    background: var(--accent-dim);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: background 150ms;
+    min-height: 4px;
+}
+
+.chart-bar:hover {
+    background: var(--accent);
+}
+
+.chart-bar-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: var(--fg-dim);
+}
+
+/* Token breakdown */
+.token-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.token-row:last-child {
+    border-bottom: none;
+}
+
+.token-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.token-dot.stx {
+    background: var(--accent);
+}
+
+.token-dot.sbtc {
+    background: var(--red);
+}
+
+.token-dot.usdcx {
+    background: var(--blue);
+}
+
+.token-name {
+    font-size: 0.85rem;
+    flex: 1;
+}
+
+.token-pct {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+}
+
+/* Recent payments table */
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    font-size: 0.7rem;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--fg-muted);
+}
+
+td.mono {
+    font-family: var(--font-mono);
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status.settled {
+    background: rgba(87, 171, 90, 0.12);
+    color: var(--green);
+}
+
+.status.pending {
+    background: rgba(212, 146, 42, 0.12);
+    color: var(--accent);
+}
+
+@media (max-width: 960px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .panels {
+        grid-template-columns: 1fr;
+    }
+}

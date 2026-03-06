@@ -1,0 +1,39 @@
+{
+  "name": "@paystream/core",
+  "version": "0.1.0",
+  "description": "PayStream x402 protocol types, constants, and utilities for Bitcoin-native micropayments on Stacks",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michojekunle/paystream"
+  },
+  "keywords": ["x402", "stacks", "bitcoin", "micropayments", "ai-payments", "sbtc"],
+  "publishConfig": { "access": "public" },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "x402-stacks": "^1.0.0"
+  },
+  "devDependencies": {
+    "@stacks/transactions": "^6.17.0",
+    "@stacks/network": "^6.17.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.9"
+  }
+}

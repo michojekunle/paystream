@@ -1,0 +1,26 @@
+[network]
+name = "devnet"
+
+[accounts.deployer]
+mnemonic = "twice particular affair smile ugly behind matter core fabric keen fish angry provide history effort"
+balance = 100_000_000_000_000
+
+[accounts.wallet_1]
+mnemonic = "sell invite acquire kitten bamboo drastic jelly vivid peace spawn twice guilt pave pen trash"
+balance = 100_000_000_000_000
+
+[accounts.wallet_2]
+mnemonic = "hold excess usual excess ring elephant install account animal property emerge lizard ceiling midnight opinion"
+balance = 100_000_000_000_000
+
+[accounts.wallet_3]
+mnemonic = "cycle puppy glare enroll cost improve round trend wrist mushroom scorpion tower claim oppose clever"
+balance = 100_000_000_000_000
+
+[[devnet.plan]]
+id = 0
+transactions = [
+  { contract-publish = { contract-name = "paystream-vault", path = "contracts/paystream-vault.clar", clarity-version = 2, cost = 10000 } },
+  { contract-publish = { contract-name = "paystream-escrow", path = "contracts/paystream-escrow.clar", clarity-version = 2, cost = 10000 } },
+  { contract-publish = { contract-name = "paystream-registry", path = "contracts/paystream-registry.clar", clarity-version = 2, cost = 10000 } },
+]
