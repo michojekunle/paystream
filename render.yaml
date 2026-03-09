@@ -1,0 +1,40 @@
+services:
+  # ─── Facilitator Service ──────────────────────────────────────────────────────
+  # Deploys from apps/facilitator and runs on Render's free tier
+  - type: web
+    name: paystream-facilitator
+    env: node
+    plan: free
+    region: ohio
+    buildCommand: pnpm install && pnpm build:packages && cd apps/facilitator && pnpm build
+    startCommand: cd apps/facilitator && pnpm start
+    healthCheckPath: /health
+    envVars:
+      - key: STACKS_NETWORK
+        value: testnet
+      - key: STACKS_API_URL
+        value: https://api.testnet.hiro.so
+
+  # ─── Production API Server ────────────────────────────────────────────────────
+  # Deploys from apps/demo-server (the api package)
+  - type: web
+    name: paystream-api
+    env: node
+    plan: free
+    region: ohio
+    buildCommand: pnpm install && pnpm build:packages && cd apps/demo-server && pnpm build
+    startCommand: cd apps/demo-server && pnpm start
+    healthCheckPath: /health
+    envVars:
+      - key: STACKS_NETWORK
+        value: testnet
+      - key: STACKS_API_URL
+        value: https://api.testnet.hiro.so
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:3000,http://localhost:3001
+      # IMPORTANT: Set these in the Render dashboard after creation:
+      # - MERCHANT_ADDRESS
+      # - MERCHANT_PRIVATE_KEY
+      # - SUPABASE_URL
+      # - SUPABASE_SERVICE_ROLE_KEY
+      # - FACILITATOR_URL (the URL of paystream-facilitator)

@@ -19,8 +19,8 @@
     "test:watch":      "pnpm --filter @paystream/core test:watch",
     "deploy:landing":    "cd apps/landing && vercel --prod",
     "deploy:dashboard":  "cd apps/dashboard && vercel --prod",
-    "deploy:api":        "cd apps/demo-server && railway up",
-    "deploy:facilitator":"cd apps/facilitator && railway up",
+    "deploy:api":        "echo 'API Server deployed automatically via Render (see render.yaml)'",
+    "deploy:facilitator":"echo 'Facilitator deployed automatically via Render (see render.yaml)'",
     "deploy:contracts":  "bash scripts/deploy-contracts.sh",
     "release":           "pnpm build:packages && pnpm -r --filter './packages/*' publish --access public --no-git-checks"
   }
