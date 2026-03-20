@@ -42,40 +42,46 @@ export async function buildPaymentTransaction(
 
   let tx: StacksTransaction;
 
-  if (token === "STX") {
-    // Native STX transfer
-    tx = await makeSTXTokenTransfer({
-      recipient,
-      amount: BigInt(amount),
-      senderKey: config.privateKey,
-      network,
-      anchorMode: AnchorMode.Any,
-      memo: "x402-payment",
-    });
-  } else {
-    // SIP-010 token transfer (sBTC or USDCx)
-    const contract = TOKEN_CONTRACTS[token];
-    if (!contract) {
-      throw new Error(`No contract found for token: ${token}`);
+  try {
+    if (token === "STX") {
+      // Native STX transfer
+      tx = await makeSTXTokenTransfer({
+        recipient,
+        amount: BigInt(amount),
+        senderKey: config.privateKey,
+        network,
+        anchorMode: AnchorMode.Any,
+        memo: "x402-payment",
+      });
+    } else {
+      // SIP-010 token transfer (sBTC or USDCx)
+      const contract = TOKEN_CONTRACTS[token];
+      if (!contract) {
+        throw new Error(`No contract found for token: ${token}`);
+      }
+
+      const { getAddressFromPrivateKey, TransactionVersion } = await import("@stacks/transactions");
+      const version = config.network === "testnet" ? TransactionVersion.Testnet : TransactionVersion.Mainnet;
+      const senderAddress = getAddressFromPrivateKey(config.privateKey, version);
+
+      tx = await makeContractCall({
+        contractAddress: contract.address,
+        contractName: contract.name,
+        functionName: "transfer",
+        functionArgs: [
+          uintCV(BigInt(amount)),
+          standardPrincipalCV(senderAddress),
+          standardPrincipalCV(recipient),
+          // memo (none)
+        ],
+        senderKey: config.privateKey,
+        network,
+        anchorMode: AnchorMode.Any,
+        postConditionMode: PostConditionMode.Allow,
+      });
     }
-
-    const [contractAddress, contractName] = [contract.address, contract.name];
-
-    tx = await makeContractCall({
-      contractAddress,
-      contractName,
-      functionName: "transfer",
-      functionArgs: [
-        uintCV(BigInt(amount)),
-        standardPrincipalCV(`SP${config.privateKey.slice(0, 38)}`),
-        standardPrincipalCV(recipient),
-        // memo (none)
-      ],
-      senderKey: config.privateKey,
-      network,
-      anchorMode: AnchorMode.Any,
-      postConditionMode: PostConditionMode.Allow,
-    });
+  } catch (err: any) {
+    throw new Error(`Failed to build Stacks transaction: ${err.message}`);
   }
 
   // Serialize to hex for the payment header

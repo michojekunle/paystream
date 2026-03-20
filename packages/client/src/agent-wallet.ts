@@ -65,6 +65,13 @@ export class AgentWallet {
     this.dailyReset = this.startOfDay();
   }
 
+  /** Get the Stacks address associated with this agent's private key. */
+  async getAddress(): Promise<string> {
+    const { getAddressFromPrivateKey, TransactionVersion } = await import("@stacks/transactions");
+    const version = this.network === "testnet" ? TransactionVersion.Testnet : TransactionVersion.Mainnet;
+    return getAddressFromPrivateKey(this.key, version);
+  }
+
   /**
    * Fetch a URL, automatically handling x402 payment if required.
    * Respects all configured budget limits.
@@ -112,6 +119,13 @@ export class AgentWallet {
 
     if (res.ok) {
       this.recordSpend(amount, token, url);
+    } else if (res.status === 402) {
+      throw new Error(`Double 402: Facilitator rejected the payment signature or nonce. Status: 402`);
+    } else if (res.status === 403 || res.status === 401) {
+      const body = await res.text().catch(() => "No details");
+      throw new Error(`Payment Failed: Facilitator or Merchant rejected the request after signature. Status: ${res.status}. ${body}`);
+    } else if (res.status >= 500) {
+      throw new Error(`Server Error: Endpoint failed after payment. Status: ${res.status}`);
     }
 
     return res;

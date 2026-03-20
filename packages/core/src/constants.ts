@@ -1,7 +1,7 @@
 // @paystream/core — Constants
 // Network configs, token addresses, and protocol defaults
 
-import { NetworkId, SupportedToken, TokenSymbol } from "./types";
+import { NetworkId, SupportedToken, TokenSymbol } from "./types.js";
 
 // ─── Network Configuration ────────────────────────────────────────────────────
 

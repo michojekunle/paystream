@@ -1,6 +1,10 @@
 {
+  "version": 2,
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "buildCommand": "pnpm --filter @paystream/landing build",
-  "outputDirectory": "apps/landing/.next"
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+  }
 }

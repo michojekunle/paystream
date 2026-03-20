@@ -7,8 +7,8 @@
  *
  * Bitflow docs: https://docs.bitflow.finance
  */
-import { BITFLOW, TOKEN_METADATA } from "./constants";
-import type { SwapQuote, SwapResult, TokenSymbol } from "./types";
+import { BITFLOW, TOKEN_METADATA } from "./constants.js";
+import type { SwapQuote, SwapResult, TokenSymbol } from "./types.js";
 
 /**
  * Get a live swap quote from the Bitflow DEX API.

@@ -1,7 +1,7 @@
 // @paystream/core — Encoding Utilities
 // Base64 encode/decode helpers for x402 HTTP headers
 
-import { PaymentPayload, PaymentReceipt, PaymentRequirements } from "./types";
+import { PaymentPayload, PaymentReceipt, PaymentRequirements } from "./types.js";
 
 /**
  * Encode a PaymentRequirements object to base64 for the payment-required header

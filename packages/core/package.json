@@ -8,6 +8,7 @@
     "url": "https://github.com/michojekunle/paystream"
   },
   "keywords": ["x402", "stacks", "bitcoin", "micropayments", "ai-payments", "sbtc"],
+  "type": "module",
   "publishConfig": { "access": "public" },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

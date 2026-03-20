@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { WalletConnect } from "../components/WalletConnect";
 import { supabase, type PaymentReceipt } from "../lib/supabase";
 import { getUserAddress } from "../lib/stacks-session";
+import { SnippetGenerator } from "../components/SnippetGenerator";
+import { WalletConnect } from "../components/WalletConnect";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3402";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface Service {
+  id: string;
   method: string;
   endpoint: string;
   price: string;
-  tokens: string[];
+  token: string;
   description: string;
-  bounty: string;
+  status: "active" | "paused";
 }
 interface HealthData {
   status: string;
@@ -132,6 +134,20 @@ export default function Dashboard() {
   const [receipts, setReceipts] = useState<PaymentReceipt[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
+  // State
+  const [isCreating, setIsCreating] = useState(false);
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [swapData, setSwapData] = useState({ from: "STX", to: "sBTC", amount: "10" });
+  const [newEndpoint, setNewEndpoint] = useState("/api/my-data");
+  const [newPrice, setNewPrice] = useState("1000");
+  const [newToken, setNewToken] = useState("STX");
+  const [newMethod, setNewMethod] = useState("GET");
+  const [newDesc, setNewDesc] = useState("My custom endpoint");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Snippet State
+  const [selectedSnippetId, setSelectedSnippetId] = useState<string | null>(null);
+
   // Stats derived from real data
   const payments = receipts.length;
   const revenueSTX = receipts
@@ -141,6 +157,9 @@ export default function Dashboard() {
   const revenueBTC = receipts
     .filter((r) => r.token.toUpperCase().includes("BTC"))
     .reduce((acc, r) => acc + Number(r.amount), 0);
+
+  let totalAmount = revenueSTX + revenueBTC;
+  const totalAmountStr = `${(revenueSTX / 1e6).toFixed(2)} STX + ${(revenueBTC / 1e8).toFixed(4)} sBTC`;
 
   // Group receipts by day to build activity chart
   const activityData = [...receipts]
@@ -190,6 +209,69 @@ export default function Dashboard() {
     }
   }, []);
 
+  const createEndpoint = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/api/services`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          method: newMethod,
+          endpoint: newEndpoint,
+          price: newPrice,
+          token: newToken,
+          description: newDesc
+        })
+      });
+      if (res.ok) {
+        await fetchData();
+        setIsCreating(false);
+      } else {
+        alert("Failed to create endpoint");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const toggleServiceStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === "active" ? "paused" : "active";
+    try {
+      const res = await fetch(`${API_URL}/api/services/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) await fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteService = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    try {
+      const res = await fetch(`${API_URL}/api/services/${id}`, { method: "DELETE" });
+      if (res.ok) await fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const simulateWithdraw = () => {
+    alert("Withdrawal initiated for " + totalAmountStr + ". (Demo only — real contract call for .settle-all would happen here)");
+  };
+
+  const handleSwap = () => {
+    setIsSwapping(true);
+    setTimeout(() => {
+      alert(`Bitflow Swap Executed: ${swapData.amount} ${swapData.from} → ${swapData.to}. \n\nIn production, this triggers a Stacks contract call to the Bitflow post-segregated pool.`);
+      setIsSwapping(false);
+    }, 1500);
+  };
+
   useEffect(() => {
     fetchData();
     // Poll session to see if logged in
@@ -224,14 +306,13 @@ export default function Dashboard() {
   };
 
   const bountyColors: Record<string, string> = {
-    x402: "var(--accent)",
+    STX: "var(--accent)",
     USDCx: "#2775CA",
     sBTC: "#F7931A",
-    All: "#8a56ff",
   };
 
   // Derive top token percentages from real data
-  const totalAmount = revenueSTX + revenueBTC * 100000; // rough norm
+  totalAmount = revenueSTX + revenueBTC * 100000; // rough norm
   const stxPct = totalAmount === 0 ? 0 : Math.round((revenueSTX / (totalAmount || 1)) * 100);
   const btcPct = totalAmount === 0 ? 0 : Math.round(((revenueBTC * 100000) / (totalAmount || 1)) * 100);
 
@@ -538,7 +619,25 @@ export default function Dashboard() {
                 </div>
 
                 <div className="card">
-                  <div className="card-title">Earnings Breakdown</div>
+                  <div className="card-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                    Earnings Breakdown
+                    {address && totalAmount > 0 && (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button 
+                          onClick={() => setIsSwapping(true)} 
+                          style={{ background: "rgba(212,146,42,0.1)", border: "1px solid var(--accent)", color: "var(--accent)", padding: "2px 8px", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+                        >
+                          Quick Swap
+                        </button>
+                        <button 
+                          onClick={simulateWithdraw} 
+                          style={{ background: "transparent", border: "1px solid var(--accent)", color: "var(--accent)", padding: "2px 8px", borderRadius: "4px", fontSize: "0.7rem", cursor: "pointer" }}
+                        >
+                          Withdraw All
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   {address && totalAmount === 0 ? (
                     <div style={{color: "var(--muted)", fontSize: "0.85rem", marginTop: 12}}>No earnings yet.</div>
                   ) : (
@@ -600,44 +699,73 @@ export default function Dashboard() {
               {/* Services + Recent Tx */}
               <div className="section-grid">
                 <div className="card">
-                  <div className="card-title">
-                    Protected Endpoints
-                    {online && (
-                      <span
+                  <div className="card-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      Protected Endpoints
+                      {online && (
+                        <span
+                          style={{
+                            marginLeft: 12,
+                            color: "#4aa860",
+                            fontWeight: 400,
+                            textTransform: "none",
+                          }}
+                        >
+                          ● live
+                        </span>
+                      )}
+                    </div>
+                    {address && (
+                      <button 
+                       onClick={() => setIsCreating(true)}
                         style={{
-                          float: "right",
-                          color: "#4aa860",
-                          fontWeight: 400,
-                          textTransform: "none",
+                          background: "var(--accent)", color: "#000", border: "none", 
+                          padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem", 
+                          cursor: "pointer", fontWeight: "bold"
                         }}
                       >
-                        ● live
-                      </span>
+                        + New Endpoint
+                      </button>
                     )}
                   </div>
-                  {(services.length > 0 ? services : FALLBACK_SERVICES).map((s) => (
-                    <div className="service-row" key={s.endpoint}>
+                  {services.length === 0 ? (
+                    <div style={{ color: "var(--muted)", fontSize: "0.85rem", textAlign: "center", padding: "24px 0" }}>
+                      No endpoints configured. Create one to start earning.
+                    </div>
+                  ) : services.map((s) => (
+                    <div className="service-row" key={s.id} style={{ opacity: s.status === "paused" ? 0.6 : 1 }}>
                       <div>
                         <div style={{ marginBottom: 2 }}>
                           <span
                             className="badge"
                             style={{
-                              background: `${bountyColors[s.bounty] ?? "var(--accent)"}22`,
-                              color: bountyColors[s.bounty] ?? "var(--accent)",
+                              background: `${bountyColors[s.token] ?? "var(--accent)"}22`,
+                              color: bountyColors[s.token] ?? "var(--accent)",
                               marginRight: 6,
                             }}
                           >
-                            {s.bounty}
+                            {s.token}
                           </span>
                           <span className="service-ep">
                             {s.method} {s.endpoint.split("?")[0]}
                           </span>
+                          {s.status === "paused" && <span style={{ fontSize: "0.7rem", color: "var(--muted)", marginLeft: 6 }}>(Paused)</span>}
                         </div>
                         <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
                           {s.description}
                         </div>
                       </div>
-                      <span className="service-price">{s.price.split(" ")[0]}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span className="service-price">{s.price.split(" ")[0]} µ{s.token}</span>
+                        <div style={{ display: "flex", gap: "6px" }}>
+                          <button onClick={() => toggleServiceStatus(s.id, s.status)} style={{ background: "transparent", border: "1px solid var(--border)", color: "var(--text)", cursor: "pointer", padding: "2px 6px", borderRadius: "4px", fontSize: "0.7rem" }}>
+                            {s.status === "active" ? "Resume" : "Pause"}
+                          </button>
+                          <button onClick={() => deleteService(s.id)} style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.3)", color: "#ff8080", cursor: "pointer", padding: "2px 6px", borderRadius: "4px", fontSize: "0.7rem" }}>
+                            Del
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -699,30 +827,194 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
+
+              {/* DevX Snippet Generator */}
+              <div className="section-grid" style={{ gridTemplateColumns: "1fr" }}>
+                <div className="card">
+                  <div className="card-title">Integration Snippets</div>
+                  <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "24px" }}>
+                    Select an endpoint below to see how native clients can interact with it automatically.
+                  </p>
+                  
+                  {services.length === 0 ? (
+                    <div style={{ color: "var(--muted)", fontSize: "0.85rem" }}>Create an endpoint first.</div>
+                  ) : (
+                    <div>
+                      <select 
+                        value={selectedSnippetId || services[0].id} 
+                        onChange={e => setSelectedSnippetId(e.target.value)}
+                        style={{ 
+                          width: "100%", maxWidth: "400px", marginBottom: "16px",
+                          background: "rgba(255,255,255,0.05)", 
+                          border: "1px solid var(--border)", 
+                          borderRadius: "6px", 
+                          padding: "8px 12px", 
+                          color: "var(--text)" 
+                        }}
+                      >
+                        {services.map(s => (
+                          <option key={s.id} value={s.id}>{s.method} {s.endpoint}</option>
+                        ))}
+                      </select>
+                      
+                      {(() => {
+                        const s = services.find(x => x.id === (selectedSnippetId || services[0].id)) || services[0];
+                        const code = `import { AgentWallet } from "@paystream/client";
+
+// Initializes wallet using private key from env
+const wallet = new AgentWallet(process.env.PRIVATE_KEY);
+
+async function callPaywalledAPI() {
+  try {
+    const response = await wallet.fetch("${API_URL}${s.endpoint}", {
+       method: "${s.method}"
+    });
+    console.log("Success:", await response.text());
+  } catch (err) {
+    console.error("API call failed:", err);
+  }
+}
+
+callPaywalledAPI();`;
+                        return (
+                          <pre style={{ 
+                            background: "rgba(0,0,0,0.5)", 
+                            padding: "16px", 
+                            borderRadius: "8px", 
+                            border: "1px solid var(--border)",
+                            overflowX: "auto",
+                            fontSize: "0.8rem",
+                            color: "#a0a0a0"
+                          }}>
+                            <code>{code}</code>
+                          </pre>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </div>
             </>
           )}
 
         </main>
       </div>
+
+      {/* Swap Modal */}
+      {isSwapping && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0, 
+          background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", 
+          justifyContent: "center", zIndex: 100
+        }}>
+          <div style={{
+            background: "var(--surface)", border: "1px solid var(--border)", 
+            borderRadius: "12px", padding: "24px", width: "100%", maxWidth: "400px"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h3 style={{ margin: 0, letterSpacing: "-0.02em" }}>Bitflow Quick Swap</h3>
+              <button onClick={() => setIsSwapping(false)} style={{ background: "transparent", border: "none", color: "var(--muted)", cursor: "pointer", fontSize: "1.2rem" }}>×</button>
+            </div>
+            
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Sell</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input 
+                  type="number" 
+                  value={swapData.amount} 
+                  onChange={e => setSwapData({...swapData, amount: e.target.value})}
+                  style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }} 
+                />
+                <select value={swapData.from} onChange={e => setSwapData({...swapData, from: e.target.value})} style={{ background: "#222", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }}>
+                  <option>STX</option>
+                  <option>sBTC</option>
+                  <option>USDCx</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center", margin: "8px 0", color: "var(--accent)" }}>⇣</div>
+
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Buy (Est. Quote)</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input readOnly value={(parseFloat(swapData.amount || "0") * 0.98).toFixed(4)} style={{ flex: 1, background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "var(--muted)" }} />
+                <select value={swapData.to} onChange={e => setSwapData({...swapData, to: e.target.value})} style={{ background: "#222", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }}>
+                  <option>sBTC</option>
+                  <option>STX</option>
+                  <option>USDCx</option>
+                </select>
+              </div>
+            </div>
+
+            <button 
+              onClick={handleSwap}
+              disabled={isSwapping && swapData.amount === "0"}
+              style={{ width: "100%", background: "var(--accent)", color: "black", border: "none", padding: "12px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
+            >
+              {isSwapping && swapData.amount !== "10" ? "Confirming..." : "Confirm Swap"}
+            </button>
+            <p style={{ fontSize: "0.65rem", color: "var(--muted)", textAlign: "center", marginTop: 12 }}>
+              Powered by <strong>Bitflow Protocol</strong>.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Create Endpoint Modal */}
+      {isCreating && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0, 
+          background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", 
+          justifyContent: "center", zIndex: 100
+        }}>
+          <div style={{
+            background: "var(--surface)", border: "1px solid var(--border)", 
+            borderRadius: "12px", padding: "24px", width: "100%", maxWidth: "400px"
+          }}>
+            <h3 style={{ marginBottom: "16px", letterSpacing: "-0.02em" }}>Create Endpoint</h3>
+            
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Method</label>
+              <select value={newMethod} onChange={e => setNewMethod(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }}>
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+              </select>
+            </div>
+      
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Path / Route</label>
+              <input value={newEndpoint} onChange={e => setNewEndpoint(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }} />
+            </div>
+      
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Price (micro-units)</label>
+              <input type="number" value={newPrice} onChange={e => setNewPrice(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }} />
+            </div>
+      
+            <div style={{ marginBottom: "12px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Payment Token</label>
+              <select value={newToken} onChange={e => setNewToken(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }}>
+                <option>STX</option>
+                <option>sBTC</option>
+                <option>USDCx</option>
+              </select>
+            </div>
+      
+            <div style={{ marginBottom: "24px" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", color: "var(--muted)", marginBottom: "4px" }}>Description</label>
+              <input value={newDesc} placeholder="What does this resource do?" onChange={e => setNewDesc(e.target.value)} style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "6px", padding: "8px", color: "white" }} />
+            </div>
+      
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+              <button disabled={isSubmitting} onClick={() => setIsCreating(false)} style={{ background: "transparent", color: "white", border: "1px solid var(--border)", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }}>Cancel</button>
+              <button disabled={isSubmitting} onClick={createEndpoint} style={{ background: "var(--accent)", color: "black", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}>{isSubmitting ? "Saving..." : "Create"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
-
-const FALLBACK_SERVICES: Service[] = [
-  {
-    method: "GET",
-    endpoint: "/api/ai/generate",
-    price: "10000 µSTX",
-    tokens: ["STX", "sBTC"],
-    description: "AI text generation",
-    bounty: "x402",
-  },
-  {
-    method: "GET",
-    endpoint: "/api/swap/quote",
-    price: "1000 µSTX",
-    tokens: ["STX", "sBTC"],
-    description: "Bitflow DEX quote",
-    bounty: "All",
-  },
-];

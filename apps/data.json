@@ -1,0 +1,48 @@
+{
+  "services": [
+    {
+      "id": "svc_default_1",
+      "method": "GET",
+      "endpoint": "/api/ai/generate",
+      "price": "10000 µSTX",
+      "token": "STX",
+      "description": "AI text generation text",
+      "status": "active",
+      "merchant": "ST<your_stacks_address>",
+      "created_at": "2026-03-20T14:17:22.683Z"
+    },
+    {
+      "id": "svc_default_2",
+      "method": "GET",
+      "endpoint": "/api/content/:id",
+      "price": "5000 µSTX",
+      "token": "STX",
+      "description": "Premium article content",
+      "status": "active",
+      "merchant": "ST<your_stacks_address>",
+      "created_at": "2026-03-20T14:17:22.683Z"
+    },
+    {
+      "id": "svc_default_3",
+      "method": "POST",
+      "endpoint": "/api/compute/submit",
+      "price": "100000 µSTX",
+      "token": "STX",
+      "description": "GPU compute job submission",
+      "status": "active",
+      "merchant": "ST<your_stacks_address>",
+      "created_at": "2026-03-20T14:17:22.683Z"
+    },
+    {
+      "id": "svc_default_4",
+      "method": "GET",
+      "endpoint": "/api/swap/quote",
+      "price": "1000 µSTX",
+      "token": "STX",
+      "description": "Bitflow DEX swap quote",
+      "status": "active",
+      "merchant": "ST<your_stacks_address>",
+      "created_at": "2026-03-20T14:17:22.683Z"
+    }
+  ]
+}

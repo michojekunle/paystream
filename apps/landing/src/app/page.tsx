@@ -417,6 +417,73 @@ function CodeBlock() {
 /* ═══════════════════════════════════════════════════════════════════════════
    PAGE
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── Live Network Stats ─────────────────────────────────────────────────── */
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3402";
+
+function LiveNetworkStats() {
+  const [stats, setStats] = useState<{
+    totalPayments: number;
+    onlineServices: number;
+    tokens: number;
+  } | null>(null);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const [statsRes, servicesRes] = await Promise.all([
+          fetch(`${API_URL}/api/stats`),
+          fetch(`${API_URL}/api/services`),
+        ]);
+        const statsData = statsRes.ok ? await statsRes.json() : null;
+        const servicesData = servicesRes.ok ? await servicesRes.json() : null;
+        setStats({
+          totalPayments: statsData?.totalPayments ?? 0,
+          onlineServices: (servicesData?.services ?? []).filter((s: any) => s.status === "active").length,
+          tokens: 3,
+        });
+      } catch {
+        // API offline — keep defaults
+      }
+    }
+    fetchStats();
+    const id = setInterval(fetchStats, 15_000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="hero-stats" aria-label="Key metrics">
+      <div className="hero-stat">
+        <div className="hero-stat-val">&lt;2s</div>
+        <div className="hero-stat-lbl">Settlement</div>
+      </div>
+      <div className="hero-stat">
+        <div className="hero-stat-val">
+          {stats ? (
+            <span style={{ color: "var(--accent)" }}>
+              {stats.totalPayments > 0 ? stats.totalPayments.toLocaleString() : "Live"}
+            </span>
+          ) : "—"}
+        </div>
+        <div className="hero-stat-lbl">Testnet Payments</div>
+      </div>
+      <div className="hero-stat">
+        <div className="hero-stat-val">
+          {stats ? (
+            <span style={{ color: stats.onlineServices > 0 ? "#4aa860" : "var(--muted)" }}>
+              {stats.onlineServices > 0 ? `${stats.onlineServices} Live` : "0"}
+            </span>
+          ) : "—"}
+        </div>
+        <div className="hero-stat-lbl">Active APIs</div>
+      </div>
+      <div className="hero-stat">
+        <div className="hero-stat-val">3</div>
+        <div className="hero-stat-lbl">Tokens Supported</div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <>
@@ -489,20 +556,7 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="hero-stats" aria-label="Key metrics">
-              <div className="hero-stat">
-                <div className="hero-stat-val">&lt;2s</div>
-                <div className="hero-stat-lbl">Settlement</div>
-              </div>
-              <div className="hero-stat">
-                <div className="hero-stat-val">3</div>
-                <div className="hero-stat-lbl">Tokens Supported</div>
-              </div>
-              <div className="hero-stat">
-                <div className="hero-stat-val">1 line</div>
-                <div className="hero-stat-lbl">Integration</div>
-              </div>
-            </div>
+            <LiveNetworkStats />
           </div>
         </section>
 

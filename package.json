@@ -2,27 +2,37 @@
   "name": "paystream",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "dev:landing":     "pnpm --filter @paystream/landing dev",
-    "dev:api":         "pnpm --filter @paystream/api dev",
-    "dev:dashboard":   "pnpm --filter @paystream/dashboard dev",
+    "dev:landing": "pnpm --filter @paystream/landing dev",
+    "dev:api": "pnpm --filter @paystream/api dev",
+    "dev:dashboard": "pnpm --filter @paystream/dashboard dev",
     "dev:facilitator": "pnpm --filter @paystream/facilitator dev",
-    "dev:all":         "pnpm run dev:landing & pnpm run dev:dashboard & pnpm run dev:api & pnpm run dev:facilitator",
-    "build":           "pnpm -r build",
-    "build:landing":   "pnpm --filter @paystream/landing build",
-    "build:packages":  "pnpm --filter @paystream/core build && pnpm --filter @paystream/server build && pnpm --filter @paystream/client build",
-    "clean":           "rm -rf node_modules packages/*/node_modules apps/*/node_modules packages/*/dist",
-    "lint":            "pnpm -r lint",
-    "typecheck":       "pnpm -r exec tsc --noEmit",
-    "test":            "pnpm --filter @paystream/core test",
-    "test:watch":      "pnpm --filter @paystream/core test:watch",
-    "deploy:landing":    "cd apps/landing && vercel --prod",
-    "deploy:dashboard":  "cd apps/dashboard && vercel --prod",
-    "deploy:api":        "echo 'API Server deployed automatically via Render (see render.yaml)'",
-    "deploy:facilitator":"echo 'Facilitator deployed automatically via Render (see render.yaml)'",
-    "deploy:contracts":  "bash scripts/deploy-contracts.sh",
-    "release":           "pnpm build:packages && pnpm -r --filter './packages/*' publish --access public --no-git-checks"
+    "dev:all": "pnpm run dev:landing & pnpm run dev:dashboard & pnpm run dev:api & pnpm run dev:facilitator",
+    "build": "pnpm -r build",
+    "build:landing": "pnpm --filter @paystream/landing build",
+    "build:packages": "pnpm --filter @paystream/core build && pnpm --filter @paystream/server build && pnpm --filter @paystream/client build",
+    "clean": "rm -rf node_modules packages/*/node_modules apps/*/node_modules packages/*/dist",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r exec tsc --noEmit",
+    "test": "pnpm -r test",
+    "test:watch": "pnpm --filter @paystream/core test:watch",
+    "test:e2e": "playwright test",
+    "test:all": "pnpm test && pnpm test:e2e",
+    "deploy:landing": "cd apps/landing && vercel --prod",
+    "deploy:dashboard": "cd apps/dashboard && vercel --prod",
+    "deploy:api": "echo 'API Server deployed automatically via Render (see render.yaml)'",
+    "deploy:facilitator": "echo 'Facilitator deployed automatically via Render (see render.yaml)'",
+    "deploy:contracts": "bash scripts/deploy-contracts.sh",
+    "release": "pnpm build:packages && pnpm -r --filter './packages/*' publish --access public --no-git-checks"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  },
+  "dependencies": {
+    "@paystream/client": "workspace:*",
+    "@paystream/core": "workspace:*"
   }
 }
-

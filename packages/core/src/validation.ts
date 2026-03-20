@@ -1,8 +1,8 @@
 // @paystream/core — Validation
 // Schema validation for protocol messages
 
-import { PaymentPayload, PaymentRequirements, TokenSymbol } from "./types";
-import { PROTOCOL } from "./constants";
+import { PaymentPayload, PaymentRequirements, TokenSymbol } from "./types.js";
+import { PROTOCOL } from "./constants.js";
 
 const VALID_SCHEMES = ["exact", "streaming"] as const;
 const VALID_NETWORKS = ["stacks:1", "stacks:2147483648"] as const;
