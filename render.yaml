@@ -1,40 +1,54 @@
 services:
   # ─── Facilitator Service ──────────────────────────────────────────────────────
-  # Deploys from apps/facilitator and runs on Render's free tier
   - type: web
     name: paystream-facilitator
     env: node
     plan: free
     region: ohio
-    buildCommand: pnpm install && pnpm build:packages && cd apps/facilitator && pnpm build
-    startCommand: cd apps/facilitator && pnpm start
+    rootDir: .
+    buildCommand: pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @paystream/facilitator build
+    startCommand: node apps/facilitator/dist/index.js
     healthCheckPath: /health
     envVars:
-      - key: STACKS_NETWORK
-        value: testnet
-      - key: STACKS_API_URL
-        value: https://api.testnet.hiro.so
-
-  # ─── Production API Server ────────────────────────────────────────────────────
-  # Deploys from apps/demo-server (the api package)
-  - type: web
-    name: paystream-api
-    env: node
-    plan: free
-    region: ohio
-    buildCommand: pnpm install && pnpm build:packages && cd apps/demo-server && pnpm build
-    startCommand: cd apps/demo-server && pnpm start
-    healthCheckPath: /health
-    envVars:
+      - key: NODE_VERSION
+        value: 20
       - key: STACKS_NETWORK
         value: testnet
       - key: STACKS_API_URL
         value: https://api.testnet.hiro.so
       - key: ALLOWED_ORIGINS
-        value: http://localhost:3000,http://localhost:3001
-      # IMPORTANT: Set these in the Render dashboard after creation:
-      # - MERCHANT_ADDRESS
-      # - MERCHANT_PRIVATE_KEY
-      # - SUPABASE_URL
-      # - SUPABASE_SERVICE_ROLE_KEY
-      # - FACILITATOR_URL (the URL of paystream-facilitator)
+        sync: false  # Set in Render dashboard: your Vercel URLs + localhost
+
+  # ─── Production API Server ────────────────────────────────────────────────────
+  - type: web
+    name: paystream-api
+    env: node
+    plan: free
+    region: ohio
+    rootDir: .
+    buildCommand: pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @paystream/api build
+    startCommand: node apps/demo-server/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: STACKS_NETWORK
+        value: testnet
+      - key: STACKS_API_URL
+        value: https://api.testnet.hiro.so
+      # ─── Required: set these in the Render Dashboard ───────────────────────
+      - key: MERCHANT_ADDRESS
+        sync: false   # Your STX address e.g. ST1ABC...
+      - key: MERCHANT_PRIVATE_KEY
+        sync: false   # Hex private key for signing
+      - key: FACILITATOR_URL
+        sync: false   # URL of paystream-facilitator above
+      - key: SUPABASE_URL
+        sync: false   # https://xxxx.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false   # service_role key from Supabase dashboard
+      - key: ALLOWED_ORIGINS
+        sync: false   # comma-separated: https://your-dashboard.vercel.app,...
+      # ─── Optional ──────────────────────────────────────────────────────────
+      - key: OPENAI_API_KEY
+        sync: false   # For real AI responses on /api/ai/generate
