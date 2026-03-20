@@ -162,7 +162,7 @@ async function dynamicPaywall(req: Request, res: Response, next: NextFunction) {
         resource: req.path,
       }) as unknown as RequestHandler;
       
-      paystreamCache.set(cacheKey, middleware);
+      paywallCache.set(cacheKey, middleware);
     }
 
     return middleware(req, res, next);
