@@ -1,4 +1,4 @@
-// @paystream/core — Validation
+// @devvmichael/paystream-core — Validation
 // Schema validation for protocol messages
 
 import { PaymentPayload, PaymentRequirements, TokenSymbol } from "./types.js";

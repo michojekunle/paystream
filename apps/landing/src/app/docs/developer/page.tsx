@@ -1,7 +1,7 @@
 export const metadata = {
   title: "Developer Integration Guide | PayStream",
   description:
-    "Quickstart guide to integrating @paystream/server and @paystream/client SDKs for x402 micropayments on Stacks.",
+    "Quickstart guide to integrating @devvmichael/paystream-server and @devvmichael/paystream-client SDKs for x402 micropayments on Stacks.",
 };
 
 export default function DevGuide() {
@@ -31,21 +31,21 @@ export default function DevGuide() {
 
       <pre>
         <code>{`# Server-side middleware
-npm install @paystream/server
+npm install @devvmichael/paystream-server
 
 # Client-side auto-payment interceptor
-npm install @paystream/client`}</code>
+npm install @devvmichael/paystream-client`}</code>
       </pre>
 
       <h2>2. Protect a Backend Endpoint</h2>
       <p>
-        Use the <code>paywall()</code> middleware from <code>@paystream/server</code>. It verifies
+        Use the <code>paywall()</code> middleware from <code>@devvmichael/paystream-server</code>. It verifies
         incoming payment headers and rejects unpaid requests with a 402 before your handler runs.
       </p>
 
       <pre>
         <code>{`import express from 'express';
-import { paywall } from '@paystream/server';
+import { paywall } from '@devvmichael/paystream-server';
 
 const app = express();
 
@@ -78,14 +78,14 @@ app.get('/api/data',
 
       <h2>3. Auto-Pay from a Frontend Client</h2>
       <p>
-        <code>@paystream/client</code> provides an Axios interceptor that automatically handles 402
+        <code>@devvmichael/paystream-client</code> provides an Axios interceptor that automatically handles 402
         responses — it prompts the user's Leather/Xverse wallet, signs the payment, and retries
         the original request.
       </p>
 
       <pre>
         <code>{`import axios from 'axios';
-import { wrapAxiosWithPayment } from '@paystream/client';
+import { wrapAxiosWithPayment } from '@devvmichael/paystream-client';
 import { privateKeyToAccount } from '@stacks/transactions';
 
 // For browser wallets: inject signing via @stacks/connect instead
@@ -108,7 +108,7 @@ console.log('Paid and received:', data);`}</code>
       </p>
 
       <pre>
-        <code>{`import { AgentWallet } from '@paystream/client';
+        <code>{`import { AgentWallet } from '@devvmichael/paystream-client';
 
 const agent = new AgentWallet({
   privateKey: process.env.AGENT_PRIVATE_KEY,

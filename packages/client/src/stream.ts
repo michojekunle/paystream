@@ -15,7 +15,7 @@
  * s.on('tick', ({ totalPaid }) => console.log('paid', totalPaid));
  * s.on('done', (receipt) => console.log('settled', receipt));
  */
-import type { PaymentPayload, TokenSymbol } from "@paystream/core";
+import type { PaymentPayload, TokenSymbol } from "@devvmichael/paystream-core";
 
 export interface StreamConfig {
   /** WebSocket endpoint URL */

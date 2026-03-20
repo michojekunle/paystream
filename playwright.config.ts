@@ -18,7 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm --filter @paystream/api dev",
+    command: "pnpm --filter @devvmichael/paystream-api dev",
     port: 3402,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,

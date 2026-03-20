@@ -1,4 +1,4 @@
-// @paystream/core — Encoding Utilities
+// @devvmichael/paystream-core — Encoding Utilities
 // Base64 encode/decode helpers for x402 HTTP headers
 
 import { PaymentPayload, PaymentReceipt, PaymentRequirements } from "./types.js";

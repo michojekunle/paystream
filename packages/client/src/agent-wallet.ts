@@ -19,7 +19,7 @@ import {
   type PaymentPayload,
   type PaymentRequirements,
   type TokenSymbol,
-} from "@paystream/core";
+} from "@devvmichael/paystream-core";
 import { buildPaymentTransaction } from "./signer.js";
 
 export interface BudgetLimits {

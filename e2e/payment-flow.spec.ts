@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { AgentWallet } from "../packages/client/src/agent-wallet";
-import { X402_HEADERS } from "@paystream/core";
+import { X402_HEADERS } from "@devvmichael/paystream-core";
 
 // We use the same private key that is seeded/funded in the testnet or local devnet if applicable.
 // For the demo server, any key works for the AgentWallet unit tests as it runs off testnet.

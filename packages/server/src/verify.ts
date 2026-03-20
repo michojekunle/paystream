@@ -1,8 +1,8 @@
 /**
- * @paystream/server — Payment verification utilities
+ * @devvmichael/paystream-server — Payment verification utilities
  */
-import type { PaymentPayload, PaymentRequirements } from "@paystream/core";
-import { isPaymentSufficient } from "@paystream/core";
+import type { PaymentPayload, PaymentRequirements } from "@devvmichael/paystream-core";
+import { isPaymentSufficient } from "@devvmichael/paystream-core";
 
 export interface VerifyOptions {
   /** Check that payload.payTo matches expected recipient */

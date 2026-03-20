@@ -1,5 +1,5 @@
 /**
- * @paystream/server — Production Facilitator
+ * @devvmichael/paystream-server — Production Facilitator
  *
  * Uses x402-stacks X402PaymentVerifier to verify signatures and settle
  * payments by broadcasting real Stacks transactions via the facilitator service.
@@ -15,8 +15,8 @@ import type {
   PaymentPayload,
   VerificationResult,
   SettlementResult,
-} from "@paystream/core";
-import { STACKS_API_URLS } from "@paystream/core";
+} from "@devvmichael/paystream-core";
+import { STACKS_API_URLS } from "@devvmichael/paystream-core";
 
 export interface FacilitatorConfig {
   /** Facilitator service URL. Defaults to process.env.FACILITATOR_URL */

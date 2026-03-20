@@ -23,11 +23,11 @@ To test the application locally as a developer:
 
 ## Integrating the API Paywall (Server-Side)
 
-Use `@paystream/server` to protect your APIs with pure HTTP `402 Payment Required` walls.
+Use `@devvmichael/paystream-server` to protect your APIs with pure HTTP `402 Payment Required` walls.
 
 ```ts
 import express from "express";
-import { paywall } from "@paystream/server";
+import { paywall } from "@devvmichael/paystream-server";
 
 const app = express();
 
@@ -48,11 +48,11 @@ app.post(
 
 ## Adding Auto-Payment (Client-Side)
 
-Standard clients hit an endpoint and get `402 Payment Required`. With `@paystream/client`, HTTP requests intercept 402s, build signatures, sign payments with standard Web3 wallets, and invisibly retry the request under 2 seconds.
+Standard clients hit an endpoint and get `402 Payment Required`. With `@devvmichael/paystream-client`, HTTP requests intercept 402s, build signatures, sign payments with standard Web3 wallets, and invisibly retry the request under 2 seconds.
 
 ```ts
 import axios from "axios";
-import { withPayStream } from "@paystream/client";
+import { withPayStream } from "@devvmichael/paystream-client";
 
 const http = withPayStream(axios, {
   key: process.env.STX_KEY, // Or prompt user via wallet connector

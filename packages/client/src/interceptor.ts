@@ -1,5 +1,5 @@
 /**
- * @paystream/client — Production HTTP interceptor for automatic x402 payments
+ * @devvmichael/paystream-client — Production HTTP interceptor for automatic x402 payments
  *
  * Wraps axios with x402-stacks `wrapAxiosWithPayment` for real Stacks transaction
  * signing. Uses `privateKeyToAccount` for correct STX address derivation.
@@ -9,7 +9,7 @@
  * const { data } = await http.get('/api/data'); // auto-pays real testnet STX if 402
  */
 import axios, { type AxiosInstance, type CreateAxiosDefaults } from "axios";
-import type { TokenSymbol } from "@paystream/core";
+import type { TokenSymbol } from "@devvmichael/paystream-core";
 
 export interface PayStreamClientConfig {
   /** Stacks private key (hex, 64 chars) */

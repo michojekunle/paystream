@@ -5,7 +5,7 @@
  *   - helmet() security headers
  *   - env-driven CORS (no hardcoded localhost)
  *   - express-rate-limit (100 req / 15 min / IP)
- *   - Real paywall() middleware via @paystream/server
+ *   - Real paywall() middleware via @devvmichael/paystream-server
  *   - Supabase persistence for receipts, nonces, and compute jobs
  *   - OpenAI integration for /api/ai/generate (optional)
  *   - Graceful SIGTERM shutdown
@@ -20,8 +20,8 @@ import express, {
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { paywall } from "@paystream/server";
-import { getBitflowQuote, decodePaymentPayload, X402_HEADERS } from "@paystream/core";
+import { paywall } from "@devvmichael/paystream-server";
+import { getBitflowQuote, decodePaymentPayload, X402_HEADERS } from "@devvmichael/paystream-core";
 import {
   recordPayment,
   isNonceUsed,
@@ -40,7 +40,7 @@ import {
 } from "./sqlite.js";
 
 // ─── Local PayStream request type ─────────────────────────────────────────────
-// Express augmentation from @paystream/server isn't visible across tsconfig
+// Express augmentation from @devvmichael/paystream-server isn't visible across tsconfig
 // project boundaries, so we define it locally and cast with `as PayStreamReq`.
 interface PayStreamReq extends Request {
   paystream?: {
@@ -225,7 +225,7 @@ app.use(dynamicPaywall);
 app.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
-    service: "@paystream/api",
+    service: "@devvmichael/paystream-api",
     version: "1.0.0",
     network: NETWORK,
     merchant: MERCHANT ? `${MERCHANT.slice(0, 10)}...` : "not set",

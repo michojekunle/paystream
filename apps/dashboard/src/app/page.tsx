@@ -859,7 +859,7 @@ export default function Dashboard() {
                       
                       {(() => {
                         const s = services.find(x => x.id === (selectedSnippetId || services[0].id)) || services[0];
-                        const code = `import { AgentWallet } from "@paystream/client";
+                        const code = `import { AgentWallet } from "@devvmichael/paystream-client";
 
 // Initializes wallet using private key from env
 const wallet = new AgentWallet(process.env.PRIVATE_KEY);

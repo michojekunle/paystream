@@ -9,14 +9,14 @@
 ## Quick Start
 
 ```bash
-npm install @paystream/server @paystream/client
+npm install @devvmichael/paystream-server @devvmichael/paystream-client
 ```
 
 ### Protect an endpoint (server)
 
 ```ts
 import express from 'express';
-import { paywall } from '@paystream/server';
+import { paywall } from '@devvmichael/paystream-server';
 
 const app = express();
 
@@ -33,7 +33,7 @@ app.get('/api/data', paywall({
 ### Pay automatically (client / AI agent)
 
 ```ts
-import { AgentWallet } from '@paystream/client';
+import { AgentWallet } from '@devvmichael/paystream-client';
 
 const agent = new AgentWallet({
   key: process.env.STX_PRIVATE_KEY,

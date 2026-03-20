@@ -55,7 +55,7 @@ export default function ProtocolPage() {
               <h4>Client</h4>
               <p>
                 Browser, AI agent, or backend service. Uses{" "}
-                <code>@paystream/client</code> to automatically intercept 402
+                <code>@devvmichael/paystream-client</code> to automatically intercept 402
                 responses, sign transactions via Stacks wallet (Leather /
                 Xverse), and retry with payment attached.
               </p>
@@ -70,7 +70,7 @@ export default function ProtocolPage() {
               <div className="arch-icon">⚙️</div>
               <h4>Server</h4>
               <p>
-                Your Express or Next.js API. Uses <code>@paystream/server</code>{" "}
+                Your Express or Next.js API. Uses <code>@devvmichael/paystream-server</code>{" "}
                 middleware to gate endpoints behind a paywall. Validates
                 signatures before executing business logic.
               </p>
@@ -182,7 +182,7 @@ X-Payment-Required: {
                     Payment
                   </h3>
                   <p>
-                    The <code>@paystream/client</code> SDK automatically catches
+                    The <code>@devvmichael/paystream-client</code> SDK automatically catches
                     the 402, prompts the user&#39;s Stacks wallet (Leather or
                     Xverse), or uses a pre-configured AgentWallet budget to sign
                     a micropayment. For AI agents, this is fully headless.
@@ -194,7 +194,7 @@ X-Payment-Required: {
                     <li>Retries the original request automatically</li>
                   </ul>
                   <div className="step-code">
-                    {`// Automatic inside @paystream/client
+                    {`// Automatic inside @devvmichael/paystream-client
 X-Payment: base64({
   scheme: "exact",
   network: "stacks:1",
@@ -304,7 +304,7 @@ Content-Type: application/json
           <div className="comp-grid">
             <div className="comp-card">
               <div className="comp-icon">📦</div>
-              <h4>@paystream/core</h4>
+              <h4>@devvmichael/paystream-core</h4>
               <p>
                 Shared types, constants, encoding utilities, and validation
                 logic. Defines the x402 payment header schema, supported token
@@ -315,7 +315,7 @@ Content-Type: application/json
 
             <div className="comp-card">
               <div className="comp-icon">🛡️</div>
-              <h4>@paystream/server</h4>
+              <h4>@devvmichael/paystream-server</h4>
               <p>
                 Express middleware that gates any endpoint behind an HTTP 402
                 paywall. Includes <code>paywall()</code> for pricing,{" "}
@@ -327,7 +327,7 @@ Content-Type: application/json
 
             <div className="comp-card">
               <div className="comp-icon">🔌</div>
-              <h4>@paystream/client</h4>
+              <h4>@devvmichael/paystream-client</h4>
               <p>
                 HTTP interceptor wrapping axios or fetch.{" "}
                 <code>withPayStream()</code> catches 402 responses and handles

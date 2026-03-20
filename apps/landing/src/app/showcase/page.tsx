@@ -12,7 +12,7 @@ import {
   Loader2,
   RefreshCw
 } from "lucide-react";
-import { AgentWallet } from "@paystream/client";
+import { AgentWallet } from "@devvmichael/paystream-client";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 

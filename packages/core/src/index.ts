@@ -1,4 +1,4 @@
-// @paystream/core — Protocol types, constants, and utilities
+// @devvmichael/paystream-core — Protocol types, constants, and utilities
 // Bitcoin-native micropayment infrastructure for the AI economy
 
 export * from "./types.js";

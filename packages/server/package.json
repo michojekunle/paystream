@@ -1,5 +1,5 @@
 {
-  "name": "@paystream/server",
+  "name": "@devvmichael/paystream-server",
   "version": "0.1.0",
   "description": "PayStream x402 Express middleware — production paywall for Stacks Bitcoin micropayments",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@paystream/core": "workspace:*",
+    "@devvmichael/paystream-core": "workspace:*",
     "x402-stacks": "^1.1.1"
   },
   "peerDependencies": {

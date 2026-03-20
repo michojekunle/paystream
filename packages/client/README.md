@@ -1,11 +1,11 @@
-# @paystream/client
+# @devvmichael/paystream-client
 
 **PayStream x402 client — automatic micropayments and AgentWallet for AI on Stacks.**
 
 ## Installation
 
 ```bash
-npm install @paystream/client
+npm install @devvmichael/paystream-client
 ```
 
 ## Quick Start
@@ -13,7 +13,7 @@ npm install @paystream/client
 ### Pay automatically (client / AI agent)
 
 ```ts
-import { AgentWallet } from '@paystream/client';
+import { AgentWallet } from '@devvmichael/paystream-client';
 
 const agent = new AgentWallet({
   key: process.env.STX_PRIVATE_KEY,

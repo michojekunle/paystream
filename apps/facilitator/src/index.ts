@@ -13,7 +13,7 @@ import "dotenv/config";
 import express, { type Request, type Response, type Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { STACKS_API_URLS } from "@paystream/core";
+import { STACKS_API_URLS } from "@devvmichael/paystream-core";
 
 const app: Express = express();
 const PORT = Number(process.env.PORT ?? 3403);

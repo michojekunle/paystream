@@ -1,5 +1,5 @@
 {
-  "name": "@paystream/api",
+  "name": "@devvmichael/paystream-api",
   "version": "0.1.0",
   "description": "PayStream production API server — x402-protected endpoints on Stacks testnet",
   "license": "MIT",
@@ -12,8 +12,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@paystream/core": "workspace:*",
-    "@paystream/server": "workspace:*",
+    "@devvmichael/paystream-core": "workspace:*",
+    "@devvmichael/paystream-server": "workspace:*",
     "@supabase/supabase-js": "^2.49.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

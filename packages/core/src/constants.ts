@@ -1,4 +1,4 @@
-// @paystream/core — Constants
+// @devvmichael/paystream-core — Constants
 // Network configs, token addresses, and protocol defaults
 
 import { NetworkId, SupportedToken, TokenSymbol } from "./types.js";

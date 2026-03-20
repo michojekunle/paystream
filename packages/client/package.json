@@ -1,5 +1,5 @@
 {
-  "name": "@paystream/client",
+  "name": "@devvmichael/paystream-client",
   "version": "0.1.0",
   "description": "PayStream x402 client — automatic micropayments and AgentWallet for AI on Stacks",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@paystream/core": "workspace:*",
+    "@devvmichael/paystream-core": "workspace:*",
     "@stacks/network": "^6.17.0",
     "@stacks/transactions": "^6.17.0",
     "axios": "^1.7.0",

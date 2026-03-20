@@ -8,7 +8,7 @@ export function SnippetGenerator() {
   const [token, setToken] = useState("STX");
 
   const serverSnippet = `import express from "express";
-import { paywall } from "@paystream/server";
+import { paywall } from "@devvmichael/paystream-server";
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.get("${endpoint}", paywall({
 
 app.listen(3000);`;
 
-  const clientSnippet = `import { AgentWallet } from "@paystream/client";
+  const clientSnippet = `import { AgentWallet } from "@devvmichael/paystream-client";
 
 // Initializes wallet using private key from env
 const wallet = new AgentWallet(process.env.PRIVATE_KEY);

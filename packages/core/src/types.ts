@@ -1,4 +1,4 @@
-// @paystream/core — Protocol Types
+// @devvmichael/paystream-core — Protocol Types
 // Defines the data structures for the PayStream x402 protocol on Stacks
 
 // ─── Token Types ───────────────────────────────────────────────────────────────

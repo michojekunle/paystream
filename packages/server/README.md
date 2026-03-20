@@ -1,11 +1,11 @@
-# @paystream/server
+# @devvmichael/paystream-server
 
 **PayStream x402 Express middleware — production paywall for Stacks Bitcoin micropayments.**
 
 ## Installation
 
 ```bash
-npm install @paystream/server
+npm install @devvmichael/paystream-server
 ```
 
 ## Quick Start
@@ -14,7 +14,7 @@ npm install @paystream/server
 
 ```ts
 import express from 'express';
-import { paywall } from '@paystream/server';
+import { paywall } from '@devvmichael/paystream-server';
 
 const app = express();
 

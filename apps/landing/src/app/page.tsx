@@ -319,7 +319,7 @@ const tabs = [
     label: "Server",
     file: "server.ts",
     code: `<span class="cm">// One-line payment middleware</span>
-<span class="kw">import</span> { <span class="fn">paywall</span> } <span class="kw">from</span> <span class="str">'@paystream/server'</span>;
+<span class="kw">import</span> { <span class="fn">paywall</span> } <span class="kw">from</span> <span class="str">'@devvmichael/paystream-server'</span>;
 
 app.<span class="fn">get</span>(<span class="str">'/api/data'</span>,
   <span class="fn">paywall</span>({
@@ -334,7 +334,7 @@ app.<span class="fn">get</span>(<span class="str">'/api/data'</span>,
     label: "Client",
     file: "client.ts",
     code: `<span class="cm">// Auto-pay for 402 responses</span>
-<span class="kw">import</span> { <span class="fn">withPayStream</span> } <span class="kw">from</span> <span class="str">'@paystream/client'</span>;
+<span class="kw">import</span> { <span class="fn">withPayStream</span> } <span class="kw">from</span> <span class="str">'@devvmichael/paystream-client'</span>;
 
 <span class="kw">const</span> http = <span class="fn">withPayStream</span>(axios, {
   key: process.env.<span class="ty">STX_KEY</span>,
@@ -348,7 +348,7 @@ app.<span class="fn">get</span>(<span class="str">'/api/data'</span>,
     label: "AI Agent",
     file: "agent.ts",
     code: `<span class="cm">// Autonomous agent with budget controls</span>
-<span class="kw">import</span> { <span class="ty">AgentWallet</span> } <span class="kw">from</span> <span class="str">'@paystream/client'</span>;
+<span class="kw">import</span> { <span class="ty">AgentWallet</span> } <span class="kw">from</span> <span class="str">'@devvmichael/paystream-client'</span>;
 
 <span class="kw">const</span> agent = <span class="kw">new</span> <span class="ty">AgentWallet</span>({
   key: process.env.<span class="ty">AGENT_KEY</span>,
@@ -365,7 +365,7 @@ app.<span class="fn">get</span>(<span class="str">'/api/data'</span>,
     label: "Stream",
     file: "stream.ts",
     code: `<span class="cm">// Pay-per-second for compute</span>
-<span class="kw">import</span> { <span class="ty">PayStream</span> } <span class="kw">from</span> <span class="str">'@paystream/client'</span>;
+<span class="kw">import</span> { <span class="ty">PayStream</span> } <span class="kw">from</span> <span class="str">'@devvmichael/paystream-client'</span>;
 
 <span class="kw">const</span> s = <span class="kw">await</span> <span class="ty">PayStream</span>.<span class="fn">open</span>({
   url: <span class="str">'wss://gpu.example/compute'</span>,
@@ -791,7 +791,7 @@ export default function Home() {
                   title="AI Agent API"
                   description="Agent hits a protected API, receives 402, signs a payment, and gets the response."
                   endpoint="GET /api/ai/generate"
-                  url="http://localhost:3402/api/ai/generate"
+                  url={`${API_URL}/api/ai/generate`}
                   method="GET"
                   token="STX"
                   price="0.01 STX"
@@ -801,7 +801,7 @@ export default function Home() {
                   title="Premium Content"
                   description="Micropay for a single article in USDCx. Pay only for what you access."
                   endpoint="GET /api/content/1"
-                  url="http://localhost:3402/api/content/1"
+                  url={`${API_URL}/api/content/1`}
                   method="GET"
                   token="USDCx"
                   price="0.005 USDCx"
@@ -811,7 +811,7 @@ export default function Home() {
                   title="GPU Compute"
                   description="Submit a GPU job paid in sBTC. Each second of compute streams micro-payments."
                   endpoint="POST /api/compute/submit"
-                  url="http://localhost:3402/api/compute/submit"
+                  url={`${API_URL}/api/compute/submit`}
                   method="POST"
                   token="sBTC"
                   price="0.1 STX"
@@ -821,7 +821,7 @@ export default function Home() {
                   title="Cross-Token Swap"
                   description="Get a Bitflow DEX quote via a paid API — pay in STX, see sBTC→USDCx rate."
                   endpoint="GET /api/swap/quote"
-                  url="http://localhost:3402/api/swap/quote?from=sBTC&to=USDCx&amount=1000000"
+                  url={`${API_URL}/api/swap/quote?from=sBTC&to=USDCx&amount=1000000`}
                   method="GET"
                   token="STX"
                   price="0.001 STX"
@@ -837,7 +837,7 @@ export default function Home() {
               >
                 Run{" "}
                 <code style={{ color: "var(--accent)" }}>pnpm dev:server</code>{" "}
-                to activate live mode.
+                to activate live mode. (Currently pointing to: <code style={{ color: "var(--accent)" }}>{API_URL}</code>)
               </p>
             </div>
           </div>
@@ -859,7 +859,7 @@ export default function Home() {
                   <span className="accent" aria-hidden="true">
                     $
                   </span>
-                  <code>npm i @paystream/server @paystream/client</code>
+                  <code>npm i @devvmichael/paystream-server @devvmichael/paystream-client</code>
                 </div>
                 <div className="cta-btns">
                   <a href="/docs/developer" className="btn btn-primary">

@@ -1,5 +1,5 @@
 /**
- * @paystream/core — Bitflow DEX Integration
+ * @devvmichael/paystream-core — Bitflow DEX Integration
  *
  * Handles cross-token swaps: pay in sBTC, merchant receives USDCx.
  * Calls the real Bitflow Finance API for live quotes.

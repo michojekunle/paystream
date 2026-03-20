@@ -1,5 +1,5 @@
 /**
- * @paystream/server — Production Express middleware for x402 payments
+ * @devvmichael/paystream-server — Production Express middleware for x402 payments
  *
  * Wraps x402-stacks `paymentMiddleware` with PayStream's receipt layer:
  *   1. Delegates full x402 protocol handling to x402-stacks

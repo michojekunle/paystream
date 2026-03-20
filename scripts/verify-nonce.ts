@@ -7,8 +7,8 @@
  * Supabase used_nonces table.
  */
 import { Buffer } from "node:buffer";
-import { AgentWallet } from "@paystream/client";
-import { X402_HEADERS } from "@paystream/core";
+import { AgentWallet } from "@devvmichael/paystream-client";
+import { X402_HEADERS } from "@devvmichael/paystream-core";
 
 const API_URL = "http://localhost:3402/api/ai/generate";
 const PRIVATE_KEY = "df74439446d1d730a4ee3ea376979603f262141AD7BBDE36D40346E6593F4239"; 

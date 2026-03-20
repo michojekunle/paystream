@@ -1,11 +1,11 @@
-# @paystream/core
+# @devvmichael/paystream-core
 
 **PayStream x402 protocol types, constants, and utilities for Bitcoin-native micropayments on Stacks.**
 
 ## Installation
 
 ```bash
-npm install @paystream/core
+npm install @devvmichael/paystream-core
 ```
 
 ## Features

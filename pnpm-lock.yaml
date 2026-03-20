@@ -8,10 +8,10 @@ importers:
 
   .:
     dependencies:
-      '@paystream/client':
+      '@devvmichael/paystream-client':
         specifier: workspace:*
         version: link:packages/client
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:packages/core
       '@stacks/network':
@@ -30,6 +30,12 @@ importers:
 
   apps/dashboard:
     dependencies:
+      '@devvmichael/paystream-client':
+        specifier: workspace:*
+        version: link:../../packages/client
+      '@devvmichael/paystream-core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@stacks/connect':
         specifier: ^8.2.6
         version: 8.2.6(@types/react@19.2.14)(lit@3.3.0)(react@19.2.4)(typescript@5.9.3)(zod@3.22.4)
@@ -70,10 +76,10 @@ importers:
 
   apps/demo-server:
     dependencies:
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@paystream/server':
+      '@devvmichael/paystream-server':
         specifier: workspace:*
         version: link:../../packages/server
       '@supabase/supabase-js':
@@ -116,7 +122,7 @@ importers:
 
   apps/facilitator:
     dependencies:
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:../../packages/core
       '@stacks/network':
@@ -156,10 +162,10 @@ importers:
 
   apps/landing:
     dependencies:
-      '@paystream/client':
+      '@devvmichael/paystream-client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:../../packages/core
       '@stacks/network':
@@ -196,7 +202,7 @@ importers:
 
   packages/client:
     dependencies:
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:../core
       '@stacks/network':
@@ -246,7 +252,7 @@ importers:
 
   packages/server:
     dependencies:
-      '@paystream/core':
+      '@devvmichael/paystream-core':
         specifier: workspace:*
         version: link:../core
       x402-stacks:

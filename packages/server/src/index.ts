@@ -1,8 +1,8 @@
 /**
- * @paystream/server — x402 Express middleware for Stacks
+ * @devvmichael/paystream-server — x402 Express middleware for Stacks
  *
  * @example
- * import { paywall, createFacilitator } from '@paystream/server';
+ * import { paywall, createFacilitator } from '@devvmichael/paystream-server';
  *
  * app.get('/api/data', paywall({
  *   to: 'SP2...YOUR_ADDR',

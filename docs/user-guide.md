@@ -32,7 +32,7 @@ Our sleek, Atlas-inspired portal will present several interactive terminal block
 For users who plan to write external autonomous scripts to use AI or compute tools, use the `AgentWallet`:
 
 ```ts
-import { AgentWallet } from "@paystream/client";
+import { AgentWallet } from "@devvmichael/paystream-client";
 
 const agent = new AgentWallet({
   key: "YOUR_SECRET_OR_LEDGER",

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AgentWallet } from "../src/agent-wallet";
-import { X402_HEADERS, encodePaymentRequirements } from "@paystream/core";
+import { X402_HEADERS, encodePaymentRequirements } from "@devvmichael/paystream-core";
 
 // We don't want to actually build Stacks transactions in testing to save time,
 // so we mock the heavy crypto imports.

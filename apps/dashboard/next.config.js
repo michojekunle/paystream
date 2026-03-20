@@ -14,6 +14,10 @@ const config = {
     "@stacks/profile",
     "@stacks/common",
   ],
+  transpilePackages: [
+    "@devvmichael/paystream-client",
+    "@devvmichael/paystream-core",
+  ],
 };
 export default config;
 
