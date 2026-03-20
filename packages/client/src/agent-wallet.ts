@@ -20,6 +20,7 @@ import {
   type PaymentRequirements,
   type TokenSymbol,
 } from "@paystream/core";
+import { buildPaymentTransaction } from "./signer.js";
 
 export interface BudgetLimits {
   /** Max micro-units per single transaction */
@@ -96,10 +97,17 @@ export class AgentWallet {
     this.checkBudget(amount);
 
     // ── Select token ───────────────────────────────────────────────────────
-    const accepted: string[] =
-      requirements.acceptedTokens ??
-      (requirements.extra?.acceptedTokens as string[] | undefined) ??
-      requirements.tokens.map((t) => t.symbol);
+    // Handle both @paystream (tokens array) and x402-stacks (tokenType string) formats
+    let accepted: string[] = [];
+    if (requirements.acceptedTokens && Array.isArray(requirements.acceptedTokens)) {
+      accepted = requirements.acceptedTokens;
+    } else if (requirements.tokens && Array.isArray(requirements.tokens)) {
+      accepted = requirements.tokens.map((t) => t.symbol);
+    } else if ((requirements as any).tokenType) {
+      accepted = [(requirements as any).tokenType];
+    } else if (requirements.extra?.acceptedTokens) {
+      accepted = requirements.extra.acceptedTokens;
+    }
 
     const allowed: string[] = this.budget.tokens ?? (accepted as TokenSymbol[]);
     const token = allowed.find((t) => accepted.includes(t));
@@ -190,7 +198,6 @@ export class AgentWallet {
           : TransactionVersion.Mainnet;
       fromAddress = getAddressFromPrivateKey(this.key, version);
 
-      const { buildPaymentTransaction } = await import("./signer.js");
       const { serializedTx } = await buildPaymentTransaction(
         token,
         req.maxAmountRequired,

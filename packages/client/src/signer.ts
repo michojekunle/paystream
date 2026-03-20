@@ -17,8 +17,9 @@ import {
   type StacksTransaction,
 } from "@stacks/transactions";
 import { StacksMainnet, StacksTestnet } from "@stacks/network";
-import { TOKEN_CONTRACTS } from "@paystream/core";
+import { STACKS_API_URLS, TOKEN_CONTRACTS } from "@paystream/core";
 import type { PaymentPayload, TokenSymbol } from "@paystream/core";
+import { webcrypto as crypto } from "node:crypto";
 
 export interface SignerConfig {
   privateKey: string;

@@ -15,11 +15,11 @@
  * import { PayStream } from '@paystream/client';
  * const s = await PayStream.open({ url: 'wss://...', wallet: { key }, rate: '1000', token: 'sBTC' });
  */
-export { withPayStream } from "./interceptor";
-export type { PayStreamClientConfig } from "./interceptor";
+export { withPayStream } from "./interceptor.js";
+export type { PayStreamClientConfig } from "./interceptor.js";
 
-export { AgentWallet } from "./agent-wallet";
-export type { AgentWalletConfig, BudgetLimits } from "./agent-wallet";
+export { AgentWallet } from "./agent-wallet.js";
+export type { AgentWalletConfig, BudgetLimits } from "./agent-wallet.js";
 
-export { PayStream } from "./stream";
-export type { StreamConfig, StreamReceipt } from "./stream";
+export { PayStream } from "./stream.js";
+export type { StreamConfig, StreamReceipt } from "./stream.js";

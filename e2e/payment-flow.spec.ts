@@ -22,7 +22,9 @@ test.describe("Full x402 Payment Flow", () => {
     // 1. Initial request using direct Playwright API to see the raw 402
     const rawRes = await request.get(`${baseURL}/api/ai/generate`);
     expect(rawRes.status()).toBe(402);
-    expect(rawRes.headers()[X402_HEADERS.REQUIREMENTS.toLowerCase()]).toBeDefined();
+    const body = await rawRes.json();
+    expect(body).toHaveProperty("maxAmountRequired");
+    expect(body).toHaveProperty("nonce");
 
     // 2. Request using the AgentWallet which should catch the 402, sign it, and retry
     // NOTE: This actually makes a live Bitflow quote and might attempt to broadcast 

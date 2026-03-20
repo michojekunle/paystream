@@ -139,13 +139,13 @@ export default function ShowcasePage() {
         body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; }
         .showcase-container { min-height: 100vh; display: flex; flex-direction: column; padding: 2rem; max-width: 1000px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
-        .logo { display: flex; alignItems: center; gap: 0.75rem; color: var(--accent); font-weight: 700; text-decoration: none; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; color: var(--accent); font-weight: 700; text-decoration: none; }
         
         .grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; flex: 1; }
         @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
 
         .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; }
-        .panel-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem; display: flex; alignItems: center; gap: 8px; }
+        .panel-title { font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; }
 
         .terminal { background: var(--term-bg); border: 1px solid var(--border); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 1rem; flex: 1; overflow-y: auto; color: #a0a09a; line-height: 1.5; }
         .log-entry { margin-bottom: 4px; display: flex; gap: 12px; }
@@ -159,7 +159,7 @@ export default function ShowcasePage() {
         input, textarea { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text); font-family: inherit; margin-bottom: 1rem; outline: none; transition: border 0.2s; }
         input:focus { border-color: var(--accent); }
         
-        .btn { border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-weight: 700; font-size: 0.9rem; display: flex; alignItems: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+        .btn { border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
         .btn-primary { background: var(--accent); color: #000; }
         .btn-primary:hover { background: #eab45b; transform: translateY(-1px); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }

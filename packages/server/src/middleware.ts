@@ -100,6 +100,26 @@ export function paywall(config: PaywallConfig): RequestHandler {
   return (req: Request, res: Response, next: NextFunction): void => {
     const middleware = getX402Middleware();
 
+    // Intercept res.send/res.json to inject the payment-required header
+    // This ensures compatibility with clients that expect headers (like PayStream AgentWallet)
+    // even if the underlying x402-stacks only sets the body.
+    const originalSend = res.send.bind(res);
+    res.send = (body) => {
+      if (res.statusCode === 402) {
+        try {
+          // Body might be a buffer or a stringified JSON
+          const data = typeof body === 'string' ? JSON.parse(body) : body;
+          if (data && typeof data === 'object' && data.maxAmountRequired) {
+             // Set the header for protocol discovery (base64 encoded JSON)
+             res.setHeader('payment-required', Buffer.from(JSON.stringify(data)).toString('base64'));
+          }
+        } catch {
+          // Non-JSON body or parsing error — ignore
+        }
+      }
+      return originalSend(body);
+    };
+
     middleware(req, res, () => {
       // After x402-stacks verifies payment, attach PayStream req.paystream
       try {
@@ -110,6 +130,11 @@ export function paywall(config: PaywallConfig): RequestHandler {
       } catch {
         // If getPayment fails (shouldn't happen) — don't block the request
       }
+
+      // If x402-stacks already sent a response (like 402 Payment Required), 
+      // do not continue to the next middleware or route handler.
+      if (res.headersSent) return;
+      
       next();
     });
   };

@@ -45,10 +45,13 @@ export function createFacilitator(config: FacilitatorConfig = {}) {
     );
   }
 
-  const getVerifier = () => {
+  /**
+   * Verified payment by cryptographically checking the signature.
+   * Lazily initializes x402-stacks verifier since it's an ESM environment.
+   */
+  const getVerifier = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { X402PaymentVerifier } = require("x402-stacks") as {
+      const { X402PaymentVerifier } = (await import("x402-stacks")) as unknown as {
         X402PaymentVerifier: new (
           facilitatorUrl: string,
           network: string,
@@ -69,7 +72,7 @@ export function createFacilitator(config: FacilitatorConfig = {}) {
       return new X402PaymentVerifier(facilitatorUrl, network);
     } catch {
       throw new Error(
-        "[PayStream] x402-stacks not installed. Run: npm install x402-stacks",
+        "[PayStream] x402-stacks failed to load. Ensure it is installed.",
       );
     }
   };
@@ -78,7 +81,6 @@ export function createFacilitator(config: FacilitatorConfig = {}) {
     /**
      * Verify a payment payload is cryptographically valid.
      * Delegates to x402-stacks X402PaymentVerifier.verify()
-     * which checks the signature, balance, and nonce via the facilitator.
      */
     async verify(payload: PaymentPayload): Promise<VerificationResult> {
       // Structural checks before hitting the facilitator
@@ -102,7 +104,7 @@ export function createFacilitator(config: FacilitatorConfig = {}) {
 
       // Delegate full cryptographic verification to x402-stacks
       try {
-        const verifier = getVerifier();
+        const verifier = await getVerifier();
         const result = await verifier.verify(payload);
         return {
           valid: result.valid,
@@ -121,12 +123,10 @@ export function createFacilitator(config: FacilitatorConfig = {}) {
 
     /**
      * Settle a verified payment by broadcasting the signed transaction
-     * to the Stacks network via the facilitator service.
-     * Returns the real on-chain txId.
      */
     async settle(payload: PaymentPayload): Promise<SettlementResult> {
       try {
-        const verifier = getVerifier();
+        const verifier = await getVerifier();
         const result = await verifier.settle(payload.signature, {
           recipient: payload.payTo,
           amount: payload.amount,

@@ -10,15 +10,15 @@
  *   tokens: ['STX', 'sBTC', 'USDCx'],
  * }), handler);
  */
-export { paywall } from "./middleware";
-export type { PaywallConfig } from "./middleware";
+export { paywall } from "./middleware.js";
+export type { PaywallConfig } from "./middleware.js";
 
-export { createFacilitator } from "./facilitator";
+export { createFacilitator } from "./facilitator.js";
 export type {
   FacilitatorConfig,
   VerificationResult,
   SettlementResult,
-} from "./facilitator";
+} from "./facilitator.js";
 
-export { verifyPayment } from "./verify";
-export type { VerifyOptions } from "./verify";
+export { verifyPayment } from "./verify.js";
+export type { VerifyOptions } from "./verify.js";
