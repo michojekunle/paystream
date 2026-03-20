@@ -2,34 +2,50 @@
 
 **Bitcoin-native micropayment infrastructure for the AI economy.**
 
-> x402-powered payment protocol enabling AI agents and humans to pay for digital resources using sBTC and USDCx with streaming micropayments on Stacks.
+> x402-powered payment protocol enabling AI agents and humans to pay for digital resources using STX, sBTC and USDCx — with streaming micropayments on Stacks.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Install
 npm install @paystream/server @paystream/client
+```
 
-# Server — protect any endpoint
+### Protect an endpoint (server)
+
+```ts
+import express from 'express';
 import { paywall } from '@paystream/server';
 
+const app = express();
+
 app.get('/api/data', paywall({
-  to: 'SP2...YOUR_ADDR',
-  price: '100000',
-  tokens: ['STX', 'sBTC', 'USDCx'],
-}), handler);
-
-# Client — auto-pay for 402 responses
-import { withPayStream } from '@paystream/client';
-
-const http = withPayStream(axios, {
-  key: process.env.STX_KEY,
-  network: 'mainnet',
+  to: 'ST1ABC...YOUR_STX_ADDRESS',
+  price: '10000',        // 0.01 STX in micro-units
+  token: 'STX',
+  network: 'testnet',
+}), (req, res) => {
+  res.json({ data: 'you paid for this' });
 });
-const { data } = await http.get('/api/data');
 ```
+
+### Pay automatically (client / AI agent)
+
+```ts
+import { AgentWallet } from '@paystream/client';
+
+const agent = new AgentWallet({
+  key: process.env.STX_PRIVATE_KEY,
+  network: 'testnet',
+  budget: { perTx: 50_000n, perDay: 1_000_000n },
+});
+
+const res = await agent.fetch('https://your-api.com/api/data');
+const data = await res.json();
+```
+
+---
 
 ## Architecture
 
@@ -38,91 +54,163 @@ paystream/
 ├── packages/
 │   ├── core/          # Types, constants, encoding, validation
 │   ├── server/        # Express middleware (paywall, facilitator, verify)
-│   └── client/        # HTTP interceptor, AgentWallet, PayStream
+│   └── client/        # HTTP interceptor, AgentWallet, PayStream streaming
 ├── apps/
-│   ├── landing/       # Next.js 15 landing page
-│   ├── dashboard/     # Real-time analytics dashboard
-│   └── demo-server/   # 4 x402-protected demo endpoints
+│   ├── landing/       # Next.js 15 marketing site
+│   ├── dashboard/     # Real-time analytics dashboard (Vercel)
+│   ├── demo-server/   # 4 live x402-protected demo endpoints (Render)
+│   └── facilitator/   # Transaction broadcaster service (Render)
 ├── contracts/
-│   ├── paystream-vault.clar      # x402 payment processing
+│   ├── paystream-vault.clar      # x402 exact payment processing + receipts
 │   ├── paystream-escrow.clar     # Streaming micropayment escrow
-│   └── paystream-registry.clar   # Service discovery registry
-└── technical_specification.md
+│   └── paystream-registry.clar   # On-chain service discovery
+└── supabase/
+    └── schema.sql     # Run this once in Supabase to create tables
 ```
 
-## Bounty Alignment
-
-| Bounty                          | Feature                                                 | Package                                  |
-| ------------------------------- | ------------------------------------------------------- | ---------------------------------------- |
-| **Best x402 Integration**       | HTTP 402 middleware, facilitator, auto-pay client       | `@paystream/server`, `@paystream/client` |
-| **Best Use of USDCx**           | USDCx payments, stable pricing, cross-chain via CCTP    | `@paystream/core`, demo-server           |
-| **Most Innovative Use of sBTC** | sBTC streaming, GPU compute payments, cross-token swaps | `@paystream/client`, escrow contract     |
-
-## Key Features
-
-- **x402 Protocol** — First production implementation on Stacks
-- **Streaming Payments** — Pay-per-second via Clarity escrow contracts
-- **Cross-Token Swaps** — Pay sBTC, merchant receives USDCx (via Bitflow)
-- **AI Agent Wallets** — Budget controls, spend limits, token allowlists
-- **Bitcoin Security** — Every payment anchored to Bitcoin L1
-- **Real-time Dashboard** — Revenue tracking, agent monitoring
-
-## Token Support
-
-| Token     | Use Case                          | Settlement           |
-| --------- | --------------------------------- | -------------------- |
-| **STX**   | Lowest fees, native transfers     | Instant              |
-| **sBTC**  | Premium payments, streaming       | 1:1 Bitcoin-backed   |
-| **USDCx** | Stable pricing, merchant-friendly | Cross-chain via CCTP |
+---
 
 ## Development
 
 ```bash
-# Prerequisites
-node >= 20, pnpm >= 9
-
-# Install dependencies
+# Prerequisites: node >= 20, pnpm >= 9
 pnpm install
 
-# Run landing page
-pnpm dev:landing        # → http://localhost:3000
+# Run all in parallel
+pnpm dev:all
 
-# Run dashboard
-pnpm dev:dashboard      # → http://localhost:3001
+# Or individually:
+pnpm dev:landing     # → http://localhost:3000
+pnpm dev:dashboard   # → http://localhost:3001
+pnpm dev:api         # → http://localhost:3402
+pnpm dev:facilitator # → http://localhost:3403
 
-# Run demo API server
-pnpm dev:server         # → http://localhost:3402
+# Build all packages + apps
+pnpm build
 
-# Type check all packages
+# Type-check everything
 pnpm typecheck
 
-# Build everything
-pnpm build
+# Run E2E tests
+pnpm test:e2e
 ```
+
+### Environment Setup
+
+Copy `.env.example` to `.env` in each app directory you're running locally:
+
+```bash
+cp apps/demo-server/.env.example apps/demo-server/.env
+# Fill in MERCHANT_ADDRESS, MERCHANT_PRIVATE_KEY, SUPABASE_URL, etc.
+```
+
+---
+
+## Full Deployment
+
+### 1. Supabase setup (required for payment persistence)
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Open the **SQL Editor** and run the contents of [`supabase/schema.sql`](./supabase/schema.sql)
+3. Copy your **Project URL** and **service_role key** from Project Settings → API
+
+### 2. Render (backend services)
+
+The `render.yaml` in the root configures both backend services automatically.
+
+1. Connect your GitHub repo to [Render](https://render.com)
+2. Render detects `render.yaml` and creates:
+   - `paystream-facilitator` — transaction broadcaster
+   - `paystream-api` — protected demo API
+3. Set the following **environment variables** in each Render service dashboard:
+
+**paystream-api (required):**
+| Variable | Description |
+|---|---|
+| `MERCHANT_ADDRESS` | Your STX address (`ST...` for testnet) |
+| `MERCHANT_PRIVATE_KEY` | Hex private key |
+| `FACILITATOR_URL` | URL of your deployed `paystream-facilitator` |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
+| `ALLOWED_ORIGINS` | Comma-separated Vercel/localhost URLs |
+| `OPENAI_API_KEY` | *(optional)* For real AI on `/api/ai/generate` |
+
+**paystream-facilitator (required):**
+| Variable | Description |
+|---|---|
+| `ALLOWED_ORIGINS` | Same as above |
+
+### 3. Vercel (frontend apps)
+
+For **dashboard** and **landing**, create separate Vercel projects:
+
+1. New Project → Import repo → Set **Root Directory** to `apps/dashboard` or `apps/landing`
+2. Set **Build Command** to:
+   ```
+   cd ../.. && pnpm build:packages && cd apps/dashboard && next build
+   ```
+3. Add environment variables:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | URL of your `paystream-api` on Render |
+| `NEXT_PUBLIC_FACILITATOR_URL` | URL of your `paystream-facilitator` on Render |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `NEXT_PUBLIC_NETWORK` | `testnet` |
+
+### 4. Smart Contracts (optional, for on-chain proof-of-payment)
+
+```bash
+# Install Clarinet
+brew install clarinet
+
+# Generate & fund a deployer wallet
+npx tsx scripts/generate-wallet.ts
+# Fund the testnet address at: https://explorer.hiro.so/sandbox/faucet?chain=testnet
+
+# Add to .env.local:
+# DEPLOYER_MNEMONIC="your 24-word seed phrase"
+
+# Deploy all 3 contracts to Stacks testnet
+pnpm deploy:contracts
+```
+
+The script auto-detects deployed addresses and writes them to `.env.local` as `VAULT_CONTRACT`, `ESCROW_CONTRACT`, `REGISTRY_CONTRACT`. Add these to your Render `paystream-api` service.
+
+### 5. Publish packages to npm (for external use)
+
+```bash
+# Login to npm
+npm login
+
+# Build + publish all packages
+pnpm release
+```
+
+---
+
+## Token Support
+
+| Token | Use Case | Settlement |
+|---|---|---|
+| **STX** | Lowest fees, native transfers | Instant |
+| **sBTC** | Premium content, streaming | 1:1 Bitcoin-backed |
+| **USDCx** | Stable pricing, merchant-friendly | Cross-chain via CCTP |
+
+---
 
 ## Tech Stack
 
 - **Smart Contracts**: Clarity 2 on Stacks
-- **Protocol**: x402 (HTTP 402 Payment Required)
-- **Frontend**: Next.js 15, React 19, CSS
-- **Server**: Express 5, TypeScript
-- **Tokens**: STX, sBTC, USDCx (SIP-010)
-- **DEX**: Bitflow (cross-token swaps)
-- **Build**: pnpm workspaces, Turbopack
+- **Protocol**: x402 (HTTP 402 Payment Required) via `x402-stacks`
+- **Frontend**: Next.js 15, React 19
+- **Server**: Express 5, TypeScript, ESM
+- **Database**: Supabase (PostgreSQL)
+- **Build**: pnpm workspaces, TypeScript project references
+- **Deploy**: Render (API), Vercel (Frontend)
 
-## Smart Contracts
-
-### paystream-vault.clar
-
-Processes exact x402 payments. Supports SIP-010 tokens and native STX. Stores on-chain receipts and tracks merchant revenue.
-
-### paystream-escrow.clar
-
-Time-based streaming micropayment escrow. Creates payment streams where funds are released per-block to the payee. Supports early settlement and refunds.
-
-### paystream-registry.clar
-
-Service discovery for the AI economy. Developers register paid API endpoints. AI agents discover and pay for services autonomously.
+---
 
 ## License
 
