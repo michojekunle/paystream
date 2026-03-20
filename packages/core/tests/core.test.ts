@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   encodePaymentRequirements,
   decodePaymentRequirements,
@@ -211,7 +211,7 @@ describe("isPaymentSufficient", () => {
 describe("constants", () => {
   it("X402_HEADERS has required keys", () => {
     expect(X402_HEADERS.REQUIREMENTS).toBe("payment-required");
-    expect(X402_HEADERS.PAYMENT).toBe("x-payment");
+    expect(X402_HEADERS.PAYMENT).toBe("payment-signature");
     expect(X402_HEADERS.RESPONSE).toBe("x-payment-response");
   });
 
@@ -231,6 +231,10 @@ describe("constants", () => {
 // ─── Bitflow ──────────────────────────────────────────────────────────────────
 
 describe("bitflow", () => {
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
   it("detects supported pairs", () => {
     expect(isBitflowPairSupported("sBTC", "USDCx")).toBe(true);
     expect(isBitflowPairSupported("STX", "sBTC")).toBe(true);
@@ -242,6 +246,17 @@ describe("bitflow", () => {
   });
 
   it("quotes sBTC → USDCx correctly", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          outputAmount: "2450000",
+          rate: "24.5",
+          slippage: 0.005,
+          route: ["sBTC", "USDCx"],
+        }),
+    } as Response);
+
     const quote = await getBitflowQuote("sBTC", "USDCx", "100000"); // 0.001 sBTC
     expect(quote.fromToken).toBe("sBTC");
     expect(quote.toToken).toBe("USDCx");
@@ -251,6 +266,17 @@ describe("bitflow", () => {
   });
 
   it("quotes STX → USDCx correctly", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          outputAmount: "2437750",
+          rate: "2.43775",
+          slippage: 0.005,
+          route: ["STX", "USDCx"],
+        }),
+    } as Response);
+
     const quote = await getBitflowQuote("STX", "USDCx", "1000000"); // 1 STX → ~$2.45 after 0.5% slippage
     // 1 STX = $2.45, after 0.5% slippage = $2.4378 → ~2437750 micro-USDCx
     expect(Number(quote.toAmount)).toBeCloseTo(2437750, -3);

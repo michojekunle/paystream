@@ -4,6 +4,7 @@
   "description": "PayStream production API server — x402-protected endpoints on Stacks testnet",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",

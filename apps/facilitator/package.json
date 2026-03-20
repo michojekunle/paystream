@@ -4,6 +4,7 @@
   "description": "PayStream x402 facilitator service — broadcasts and confirms Stacks transactions",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",

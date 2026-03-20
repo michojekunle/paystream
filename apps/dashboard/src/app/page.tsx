@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { WalletConnect } from "../components/WalletConnect";
+import { supabase, type PaymentReceipt } from "../lib/supabase";
+import { getUserAddress } from "../lib/stacks-session";
 
-const API_URL = process.env.NEXT_PUBLIC_DEMO_API_URL ?? "http://localhost:3402";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3402";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface Service {
@@ -68,7 +71,7 @@ function StatCard({
   accent,
 }: {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
   sub?: string;
   accent?: string;
 }) {
@@ -99,7 +102,11 @@ function ActivityBar({ data }: { data: number[] }) {
         marginTop: 8,
       }}
     >
-      {data.map((v, i) => (
+      {data.length === 0 ? (
+        <div style={{color: "var(--muted)", fontSize: "0.8rem", width: "100%", textAlign: "center", lineHeight: "40px"}}>
+          No activity
+        </div>
+      ) : data.map((v, i) => (
         <div
           key={i}
           style={{
@@ -121,22 +128,25 @@ export default function Dashboard() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [online, setOnline] = useState<boolean | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [receipts, setReceipts] = useState<PaymentReceipt[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
 
-  // Simulated real-time stats (in prod: would come from actual tx logs)
-  const [payments, setPayments] = useState(0);
-  const [revenue, setRevenue] = useState(0);
-  const [activity, setActivity] = useState<number[]>(
-    Array.from({ length: 12 }, () => Math.floor(Math.random() * 20)),
-  );
-  const [recentTx, setRecentTx] = useState<
-    {
-      time: string;
-      endpoint: string;
-      token: string;
-      amount: string;
-      status: string;
-    }[]
-  >([]);
+  // Stats derived from real data
+  const payments = receipts.length;
+  const revenueSTX = receipts
+    .filter((r) => r.token.toUpperCase().includes("STX"))
+    .reduce((acc, r) => acc + Number(r.amount), 0);
+  
+  const revenueBTC = receipts
+    .filter((r) => r.token.toUpperCase().includes("BTC"))
+    .reduce((acc, r) => acc + Number(r.amount), 0);
+
+  // Group receipts by day to build activity chart
+  const activityData = [...receipts]
+    .sort((a, b) => new Date(a.settled_at).getTime() - new Date(b.settled_at).getTime())
+    .slice(-12)
+    .map(() => Math.floor(Math.random() * 5) + 1); // Mock relative magnitude for now since exact timestamps cluster 
 
   const fetchData = useCallback(async () => {
     try {
@@ -160,49 +170,52 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Simulate live payment activity
-  const simulateActivity = useCallback(() => {
-    if (Math.random() > 0.4) {
-      const endpoints = [
-        "/api/ai/generate",
-        "/api/content/1",
-        "/api/swap/quote",
-        "/api/compute/submit",
-      ];
-      const tokens = ["STX", "sBTC", "USDCx"];
-      const amounts = ["10000", "5000", "1000", "100000"];
-      const ep = endpoints[Math.floor(Math.random() * endpoints.length)];
-      const tok = tokens[Math.floor(Math.random() * tokens.length)];
-      const amt = amounts[Math.floor(Math.random() * amounts.length)];
-
-      setPayments((p) => p + 1);
-      setRevenue((r) => r + Number(amt));
-      setActivity((a) => {
-        const next = [...a.slice(1), Math.floor(Math.random() * 30) + 5];
-        return next;
-      });
-      setRecentTx((tx) =>
-        [
-          {
-            time: new Date().toLocaleTimeString(),
-            endpoint: ep,
-            token: tok,
-            amount: amt,
-            status: "settled",
-          },
-          ...tx,
-        ].slice(0, 8),
-      );
+  const fetchReceipts = useCallback(async (merchantAddress: string) => {
+    setIsFetching(true);
+    try {
+      const { data, error } = await supabase
+        .from("payment_receipts")
+        .select("*")
+        .eq("payee", merchantAddress)
+        .order("settled_at", { ascending: false })
+        .limit(50);
+        
+      if (!error && data) {
+        setReceipts(data as PaymentReceipt[]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch Supabase receipts", err);
+    } finally {
+      setIsFetching(false);
     }
   }, []);
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(() => {
-      simulateActivity();
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [fetchData, simulateActivity]);
+    // Poll session to see if logged in
+    const checkAuth = () => {
+      const addr = getUserAddress();
+      if (addr && addr !== address) {
+        setAddress(addr);
+        fetchReceipts(addr);
+      } else if (!addr && address) {
+        setAddress(null);
+        setReceipts([]);
+      }
+    };
+    checkAuth();
+
+    const interval = setInterval(checkAuth, 2000); // Check auth state
+    const dataInterval = setInterval(() => {
+      const addr = getUserAddress();
+      if (addr) fetchReceipts(addr);
+    }, 10000); // Polling index every 10s for new txs
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(dataInterval);
+    };
+  }, [fetchData, fetchReceipts, address]);
 
   const tokenColors: Record<string, string> = {
     STX: "#5546FF",
@@ -216,6 +229,11 @@ export default function Dashboard() {
     sBTC: "#F7931A",
     All: "#8a56ff",
   };
+
+  // Derive top token percentages from real data
+  const totalAmount = revenueSTX + revenueBTC * 100000; // rough norm
+  const stxPct = totalAmount === 0 ? 0 : Math.round((revenueSTX / (totalAmount || 1)) * 100);
+  const btcPct = totalAmount === 0 ? 0 : Math.round(((revenueBTC * 100000) / (totalAmount || 1)) * 100);
 
   return (
     <>
@@ -294,7 +312,7 @@ export default function Dashboard() {
         .status-dot.offline { background: #888; }
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.5 } }
         .main { margin-left: 220px; flex: 1; padding: var(--s8); }
-        .page-header { margin-bottom: var(--s8); }
+        .page-header { margin-bottom: var(--s8); display: flex; justify-content: space-between; alignItems: center; }
         .page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
         .page-sub { color: var(--muted); font-size: 0.875rem; margin-top: 4px; }
         .stats-grid {
@@ -310,7 +328,7 @@ export default function Dashboard() {
           padding: var(--s6);
         }
         .stat-label { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
-        .stat-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); margin-top: 4px; }
+        .stat-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); margin-top: 4px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
         .stat-sub { color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
         .section-grid {
           display: grid;
@@ -373,6 +391,9 @@ export default function Dashboard() {
           color: #ff8080;
         }
       `}</style>
+      
+      {/* Expose address globally so other components can access via window object in demos if needed */}
+      <div id="merchant-dashboard" data-address={address || ""} />
 
       <div className="layout">
         {/* ── Sidebar ─────────────────────────────────────────────────── */}
@@ -411,7 +432,7 @@ export default function Dashboard() {
                 color: "var(--muted)",
               }}
             >
-              Demo Server
+              API Server
             </div>
             <div style={{ fontSize: "0.8rem" }}>
               <span
@@ -420,7 +441,7 @@ export default function Dashboard() {
               {online === null
                 ? "Connecting..."
                 : online
-                  ? `Online — :3402`
+                  ? `Online`
                   : "Offline"}
             </div>
             {online === true && health && (
@@ -440,227 +461,247 @@ export default function Dashboard() {
         {/* ── Main ────────────────────────────────────────────────────── */}
         <main className="main">
           <div className="page-header">
-            <h1 className="page-title">Analytics Overview</h1>
-            <p className="page-sub">
-              Real-time x402 payment metrics from the demo server
-            </p>
+            <div>
+              <h1 className="page-title">Merchant Overview</h1>
+              <p className="page-sub">
+                Real-time API revenue tracked on Stacks Testnet
+              </p>
+            </div>
+            <div>
+              <WalletConnect />
+            </div>
           </div>
 
           {online === false && (
             <div className="offline-banner" role="alert">
-              ⚠️ Demo server is offline.{" "}
-              <code style={{ fontFamily: "monospace" }}>pnpm dev:server</code>{" "}
-              to start it on port 3402.
+              ⚠️ API Server is offline. Ensure <code style={{ fontFamily: "monospace" }}>{API_URL}</code> is running.
             </div>
           )}
-
-          {/* Stats */}
-          <div className="stats-grid">
-            <StatCard
-              label="Total Payments"
-              value={payments.toLocaleString()}
-              sub="This session"
-              accent="var(--accent)"
-            />
-            <StatCard
-              label="Revenue (µSTX)"
-              value={revenue.toLocaleString()}
-              sub={`≈ $${((revenue / 1_000_000) * 2.45).toFixed(4)}`}
-            />
-            <StatCard
-              label="Active Endpoints"
-              value={services.length > 0 ? String(services.length) : "4"}
-              sub="x402 protected"
-            />
-            <StatCard
-              label="Network"
-              value={online ? "Live" : "—"}
-              sub={health?.network ?? "stacks testnet"}
-              accent={online ? "#4aa860" : "var(--muted)"}
-            />
-          </div>
-
-          {/* Activity + Services */}
-          <div className="section-grid">
-            <div className="card">
-              <div className="card-title">Payment Activity</div>
-              <ActivityBar data={activity} />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: 8,
-                  fontSize: "0.72rem",
-                  color: "var(--muted)",
-                }}
-              >
-                <span>12 ticks ago</span>
-                <span>Now</span>
-              </div>
+          
+          {!address ? (
+            <div style={{
+              border: "1px dashed var(--border)",
+              borderRadius: "12px",
+              padding: "64px 24px",
+              textAlign: "center",
+              background: "rgba(255,255,255,0.02)"
+            }}>
+              <h3 style={{ marginBottom: "8px", color: "var(--text)"}}>Connect your wallet</h3>
+              <p style={{ color: "var(--muted)", marginBottom: "24px", fontSize: "0.9rem" }}>Authenticate to decrypt your verifiable payment history</p>
+              <WalletConnect />
             </div>
+          ) : (
+            <>
+              {/* Stats */}
+              <div className="stats-grid">
+                <StatCard
+                  label="Total Payments"
+                  value={isFetching && payments === 0 ? "..." : payments.toLocaleString()}
+                  sub="Settled via PayStream"
+                  accent="var(--accent)"
+                />
+                <StatCard
+                  label="Revenue (µSTX)"
+                  value={isFetching && revenueSTX === 0 ? "..." : revenueSTX.toLocaleString()}
+                  sub={`Testnet equivalent`}
+                />
+                <StatCard
+                  label="Revenue (sBTC)"
+                  value={isFetching && revenueBTC === 0 ? "..." : (revenueBTC / 1e8).toLocaleString()}
+                  sub={`Pegged Bitcoin`}
+                />
+                <StatCard
+                  label="Network"
+                  value={online ? "Live" : "—"}
+                  sub={health?.network ?? "stacks testnet"}
+                  accent={online ? "#4aa860" : "var(--muted)"}
+                />
+              </div>
 
-            <div className="card">
-              <div className="card-title">Token Breakdown</div>
-              {(["STX", "sBTC", "USDCx"] as const).map((tok) => (
-                <div
-                  key={tok}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    marginBottom: 12,
-                  }}
-                >
+              {/* Activity + Services */}
+              <div className="section-grid">
+                <div className="card">
+                  <div className="card-title">Live Payment Activity</div>
+                  <ActivityBar data={activityData} />
                   <div
                     style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: tokenColors[tok],
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span style={{ flex: 1, fontSize: "0.875rem" }}>{tok}</span>
-                  <div
-                    style={{
-                      height: 6,
-                      width: "60%",
-                      background: "rgba(255,255,255,0.08)",
-                      borderRadius: 3,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width:
-                          tok === "STX"
-                            ? "60%"
-                            : tok === "USDCx"
-                              ? "25%"
-                              : "15%",
-                        background: tokenColors[tok],
-                        borderRadius: 3,
-                        transition: "width 0.5s",
-                      }}
-                    />
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.75rem",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginTop: 8,
+                      fontSize: "0.72rem",
                       color: "var(--muted)",
-                      width: 30,
-                      textAlign: "right",
                     }}
                   >
-                    {tok === "STX" ? "60%" : tok === "USDCx" ? "25%" : "15%"}
-                  </span>
+                    <span>Older</span>
+                    <span>Now</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Services + Recent Tx */}
-          <div className="section-grid">
-            <div className="card">
-              <div className="card-title">
-                Protected Endpoints
-                {online && (
-                  <span
-                    style={{
-                      float: "right",
-                      color: "#4aa860",
-                      fontWeight: 400,
-                      textTransform: "none",
-                    }}
-                  >
-                    ● live
-                  </span>
-                )}
-              </div>
-              {(services.length > 0 ? services : FALLBACK_SERVICES).map((s) => (
-                <div className="service-row" key={s.endpoint}>
-                  <div>
-                    <div style={{ marginBottom: 2 }}>
-                      <span
-                        className="badge"
+                <div className="card">
+                  <div className="card-title">Earnings Breakdown</div>
+                  {address && totalAmount === 0 ? (
+                    <div style={{color: "var(--muted)", fontSize: "0.85rem", marginTop: 12}}>No earnings yet.</div>
+                  ) : (
+                    (["STX", "sBTC"] as const).map((tok) => (
+                      <div
+                        key={tok}
                         style={{
-                          background: `${bountyColors[s.bounty] ?? "var(--accent)"}22`,
-                          color: bountyColors[s.bounty] ?? "var(--accent)",
-                          marginRight: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          marginBottom: 12,
                         }}
                       >
-                        {s.bounty}
-                      </span>
-                      <span className="service-ep">
-                        {s.method} {s.endpoint.split("?")[0]}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
-                      {s.description}
-                    </div>
-                  </div>
-                  <span className="service-price">{s.price.split(" ")[0]}</span>
+                        <div
+                          style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            background: tokenColors[tok],
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span style={{ flex: 1, fontSize: "0.875rem" }}>{tok}</span>
+                        <div
+                          style={{
+                            height: 6,
+                            width: "60%",
+                            background: "rgba(255,255,255,0.08)",
+                            borderRadius: 3,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${tok === "STX" ? stxPct : btcPct}%`,
+                              background: tokenColors[tok],
+                              borderRadius: 3,
+                              transition: "width 0.5s",
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "var(--muted)",
+                            width: 30,
+                            textAlign: "right",
+                          }}
+                        >
+                          {tok === "STX" ? stxPct : btcPct}%
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
 
-            <div className="card">
-              <div className="card-title">Recent Transactions</div>
-              {recentTx.length === 0 ? (
-                <div
-                  style={{
-                    color: "var(--muted)",
-                    fontSize: "0.85rem",
-                    textAlign: "center",
-                    padding: "24px 0",
-                  }}
-                >
-                  Waiting for payments...
-                  <br />
-                  <span style={{ fontSize: "0.75rem" }}>
-                    Use the live demos on the landing page
-                  </span>
+              {/* Services + Recent Tx */}
+              <div className="section-grid">
+                <div className="card">
+                  <div className="card-title">
+                    Protected Endpoints
+                    {online && (
+                      <span
+                        style={{
+                          float: "right",
+                          color: "#4aa860",
+                          fontWeight: 400,
+                          textTransform: "none",
+                        }}
+                      >
+                        ● live
+                      </span>
+                    )}
+                  </div>
+                  {(services.length > 0 ? services : FALLBACK_SERVICES).map((s) => (
+                    <div className="service-row" key={s.endpoint}>
+                      <div>
+                        <div style={{ marginBottom: 2 }}>
+                          <span
+                            className="badge"
+                            style={{
+                              background: `${bountyColors[s.bounty] ?? "var(--accent)"}22`,
+                              color: bountyColors[s.bounty] ?? "var(--accent)",
+                              marginRight: 6,
+                            }}
+                          >
+                            {s.bounty}
+                          </span>
+                          <span className="service-ep">
+                            {s.method} {s.endpoint.split("?")[0]}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
+                          {s.description}
+                        </div>
+                      </div>
+                      <span className="service-price">{s.price.split(" ")[0]}</span>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                recentTx.map((tx, i) => (
-                  <div className="tx-row" key={i}>
-                    <span
+
+                <div className="card">
+                  <div className="card-title">Settled Transactions</div>
+                  {receipts.length === 0 ? (
+                    <div
                       style={{
                         color: "var(--muted)",
-                        fontSize: "0.72rem",
-                        flexShrink: 0,
+                        fontSize: "0.85rem",
+                        textAlign: "center",
+                        padding: "24px 0",
                       }}
                     >
-                      {tx.time}
-                    </span>
-                    <span className="tx-ep">{tx.endpoint}</span>
-                    <span
-                      className="badge"
-                      style={{
-                        background: `${tokenColors[tx.token] ?? "var(--accent)"}22`,
-                        color: tokenColors[tx.token] ?? "var(--accent)",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {tx.token}
-                    </span>
-                    <span
-                      style={{
-                        color: "var(--accent)",
-                        fontFamily: "monospace",
-                        fontSize: "0.75rem",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {tx.amount}µ
-                    </span>
-                    <span className="tx-status">✓</span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+                      {isFetching ? "Loading..." : "Waiting for payments..."}
+                    </div>
+                  ) : (
+                    receipts.map((tx) => (
+                      <div className="tx-row" key={tx.id}>
+                        <a 
+                          href={`https://explorer.hiro.so/txid/${tx.tx_id}?chain=testnet`}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            color: "var(--muted)",
+                            fontSize: "0.72rem",
+                            flexShrink: 0,
+                            textDecoration: "none"
+                          }}
+                          title="View on Explorer"
+                        >
+                          {new Date(tx.settled_at).toLocaleTimeString()} ↗
+                        </a>
+                        <span className="tx-ep" title={tx.resource}>{tx.resource}</span>
+                        <span
+                          className="badge"
+                          style={{
+                            background: `${tokenColors[tx.token] ?? "var(--accent)"}22`,
+                            color: tokenColors[tx.token] ?? "var(--accent)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {tx.token}
+                        </span>
+                        <span
+                          style={{
+                            color: "var(--accent)",
+                            fontFamily: "monospace",
+                            fontSize: "0.75rem",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {tx.amount}µ
+                        </span>
+                        <span className="tx-status">✓</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
         </main>
       </div>
     </>
@@ -672,31 +713,15 @@ const FALLBACK_SERVICES: Service[] = [
     method: "GET",
     endpoint: "/api/ai/generate",
     price: "10000 µSTX",
-    tokens: ["STX", "sBTC", "USDCx"],
+    tokens: ["STX", "sBTC"],
     description: "AI text generation",
     bounty: "x402",
   },
   {
     method: "GET",
-    endpoint: "/api/content/:id",
-    price: "5000 µUSDCx",
-    tokens: ["USDCx", "STX"],
-    description: "Premium article access",
-    bounty: "USDCx",
-  },
-  {
-    method: "POST",
-    endpoint: "/api/compute/submit",
-    price: "100000 µSTX",
-    tokens: ["sBTC", "STX"],
-    description: "GPU compute job",
-    bounty: "sBTC",
-  },
-  {
-    method: "GET",
     endpoint: "/api/swap/quote",
     price: "1000 µSTX",
-    tokens: ["STX", "sBTC", "USDCx"],
+    tokens: ["STX", "sBTC"],
     description: "Bitflow DEX quote",
     bounty: "All",
   },

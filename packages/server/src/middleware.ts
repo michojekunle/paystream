@@ -10,6 +10,8 @@
  *   app.get('/api/data', paywall({ to, price }), handler)
  */
 import type { Request, Response, NextFunction, RequestHandler } from "express";
+import { x402PaymentRequired, getPayment } from "x402-stacks";
+
 /**
  * Represents the payment information attached to req.paystream
  * by the paywall() middleware after successful x402 verification.
@@ -78,22 +80,16 @@ export function paywall(config: PaywallConfig): RequestHandler {
   const getX402Middleware = (): RequestHandler => {
     if (!x402Middleware) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { paymentMiddleware } = require("x402-stacks") as {
-          paymentMiddleware: (opts: unknown) => RequestHandler;
-        };
-        x402Middleware = paymentMiddleware({
+        x402Middleware = x402PaymentRequired({
           amount: String(config.price),
           address: config.to,
           network: config.network ?? "testnet",
           facilitatorUrl: facilitatorUrl ?? "",
           tokenType: config.token ?? "STX",
-          description: config.description,
-          resource: config.resource,
         });
-      } catch {
+      } catch (e: any) {
         throw new Error(
-          "[PayStream] x402-stacks not installed. Run: npm install x402-stacks",
+          `[PayStream] x402-stacks failed to initialize: ${e.message}`,
         );
       }
     }
@@ -107,16 +103,6 @@ export function paywall(config: PaywallConfig): RequestHandler {
     middleware(req, res, () => {
       // After x402-stacks verifies payment, attach PayStream req.paystream
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { getPayment } = require("x402-stacks") as {
-          getPayment: (req: Request) => {
-            payer: string;
-            transaction: string;
-            amount: string;
-            asset: string;
-            network: string;
-          } | null;
-        };
         const payment = getPayment(req);
         if (payment) {
           req.paystream = { payment };
