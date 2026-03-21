@@ -9,11 +9,11 @@
     "start": "next start -p 3001"
   },
   "dependencies": {
+    "@devvmichael/paystream-client": "^0.1.0",
+    "@devvmichael/paystream-core": "^0.1.0",
     "@stacks/connect": "^8.2.6",
     "@stacks/network": "^7.3.1",
     "@stacks/transactions": "^7.3.1",
-    "@devvmichael/paystream-client": "workspace:*",
-    "@devvmichael/paystream-core": "workspace:*",
     "@supabase/supabase-js": "^2.98.0",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",

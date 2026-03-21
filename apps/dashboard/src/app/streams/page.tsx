@@ -3,21 +3,21 @@
 import { useState, useEffect } from "react";
 import { request } from "@stacks/connect";
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   uintCV,
   principalCV,
   standardPrincipalCV,
   cvToValue,
   Pc,
 } from "@stacks/transactions";
-import { StacksTestnet } from "@stacks/network";
+import { STACKS_TESTNET } from "@stacks/network";
 import { getUserAddress } from "../../lib/stacks-session";
 import { WalletConnect } from "../../components/WalletConnect";
 
 // Replace with deployed contract address after clarinet deploy
 const ESCROW_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS || "ST2QKZ4FKHAH1NQKYKYAYZPY440FEPK7GZ1QB9AC";
 const ESCROW_CONTRACT_NAME = "paystream-escrow";
-const NETWORK = new StacksTestnet();
+const NETWORK = STACKS_TESTNET;
 
 interface Stream {
   streamId: number;
@@ -64,7 +64,7 @@ export default function StreamsPage() {
 
   async function getStreamCount(): Promise<number> {
     try {
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         contractAddress: ESCROW_CONTRACT_ADDRESS,
         contractName: ESCROW_CONTRACT_NAME,
         functionName: "get-stream-count",
@@ -80,7 +80,7 @@ export default function StreamsPage() {
 
   async function fetchStream(streamId: number): Promise<Stream | null> {
     try {
-      const result = await callReadOnlyFunction({
+      const result = await fetchCallReadOnlyFunction({
         contractAddress: ESCROW_CONTRACT_ADDRESS,
         contractName: ESCROW_CONTRACT_NAME,
         functionName: "get-stream",

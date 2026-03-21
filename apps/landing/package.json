@@ -4,18 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "pnpm --filter @devvmichael/paystream-core build && pnpm --filter @devvmichael/paystream-client build && next build",
     "start": "next start"
   },
   "dependencies": {
+    "@devvmichael/paystream-client": "^0.1.0",
+    "@devvmichael/paystream-core": "^0.1.0",
+    "@stacks/network": "^7.3.1",
+    "@stacks/transactions": "^7.3.1",
+    "lucide-react": "^0.577.0",
     "next": "16.0.10",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@devvmichael/paystream-client": "workspace:*",
-    "@devvmichael/paystream-core": "workspace:*",
-    "@stacks/transactions": "^7.3.1",
-    "@stacks/network": "^7.3.1",
-    "lucide-react": "^0.577.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
