@@ -2,7 +2,7 @@
 ;; Time-based escrow for streaming micropayments
 ;; Payer deposits SIP-010 tokens which are released per-block to payee
 
-;; ─── Constants ──────────────────────────────────────────────────────────────────
+;; --------- Constants ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-constant CONTRACT-OWNER tx-sender)
 (define-constant ERR-NOT-AUTHORIZED (err u1000))
@@ -13,11 +13,11 @@
 (define-constant ERR-INVALID-PARAMS (err u1005))
 (define-constant ERR-ZERO-AMOUNT (err u1006))
 
-;; ─── Data Vars ──────────────────────────────────────────────────────────────────
+;; --------- Data Vars ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-data-var stream-counter uint u0)
 
-;; ─── Data Maps ──────────────────────────────────────────────────────────────────
+;; --------- Data Maps ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-map streams
   { stream-id: uint }
@@ -34,7 +34,7 @@
   }
 )
 
-;; ─── SIP-010 Trait ──────────────────────────────────────────────────────────────
+;; --------- SIP-010 Trait ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-trait sip-010-trait
   (
@@ -48,7 +48,7 @@
   )
 )
 
-;; ─── Public Functions ───────────────────────────────────────────────────────────
+;; --------- Public Functions ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Create a new payment stream
 ;; Deposits tokens into escrow, releases them per-block to payee
@@ -79,8 +79,8 @@
         token-contract: (contract-of token),
         total-deposited: total-amount,
         rate-per-block: rate,
-        start-block: stacks-block-height,
-        end-block: (+ stacks-block-height duration-blocks),
+        start-block: block-height,
+        end-block: (+ block-height duration-blocks),
         withdrawn: u0,
         settled: false
       }
@@ -133,7 +133,7 @@
   )
 )
 
-;; Settle a stream — pay remaining to payee, refund rest to payer
+;; Settle a stream --- pay remaining to payee, refund rest to payer
 ;; Can be called by payer (early termination) or anyone (after expiry)
 (define-public (settle-stream (stream-id uint) (token <sip-010-trait>))
   (let (
@@ -146,7 +146,7 @@
     (asserts! (or 
       (is-eq tx-sender (get payer stream))
       (is-eq tx-sender (get payee stream))
-      (>= stacks-block-height (get end-block stream))
+      (>= block-height (get end-block stream))
     ) ERR-NOT-AUTHORIZED)
     (asserts! (not (get settled stream)) ERR-ALREADY-SETTLED)
     
@@ -182,14 +182,14 @@
   )
 )
 
-;; ─── Read-only Functions ────────────────────────────────────────────────────────
+;; --------- Read-only Functions ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Calculate accrued amount based on elapsed blocks
 (define-read-only (calculate-accrued (stream-id uint))
   (let (
     (stream (unwrap-panic (map-get? streams { stream-id: stream-id })))
-    (current (if (< stacks-block-height (get end-block stream))
-                 stacks-block-height
+    (current (if (< block-height (get end-block stream))
+                 block-height
                  (get end-block stream)))
     (elapsed (- current (get start-block stream)))
   )
@@ -225,7 +225,7 @@
   (match (map-get? streams { stream-id: stream-id })
     stream (and
       (not (get settled stream))
-      (< stacks-block-height (get end-block stream))
+      (< block-height (get end-block stream))
     )
     false
   )

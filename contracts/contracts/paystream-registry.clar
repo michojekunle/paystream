@@ -2,7 +2,7 @@
 ;; Service/API registry for discovering paid endpoints
 ;; Enables AI agents to discover and pay for services
 
-;; ─── Constants ──────────────────────────────────────────────────────────────────
+;; --------- Constants ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-constant CONTRACT-OWNER tx-sender)
 (define-constant ERR-NOT-AUTHORIZED (err u3000))
@@ -10,13 +10,13 @@
 (define-constant ERR-SERVICE-NOT-FOUND (err u3002))
 (define-constant ERR-INVALID-URL (err u3003))
 
-;; ─── Data Vars ──────────────────────────────────────────────────────────────────
+;; --------- Data Vars ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-data-var service-counter uint u0)
 
-;; ─── Data Maps ──────────────────────────────────────────────────────────────────
+;; --------- Data Maps ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-;; Service registry — available paid APIs/resources
+;; Service registry --- available paid APIs/resources
 (define-map services
   { service-id: uint }
   {
@@ -46,7 +46,7 @@
   { count: uint }
 )
 
-;; ─── Public Functions ───────────────────────────────────────────────────────────
+;; --------- Public Functions ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Register a new paid service/API
 (define-public (register-service
@@ -76,7 +76,7 @@
         price-usdcx: price-usdcx,
         scheme: scheme,
         active: true,
-        created-at: stacks-block-height,
+        created-at: block-height,
         total-calls: u0,
         total-revenue: u0
       }
@@ -164,7 +164,7 @@
   )
 )
 
-;; ─── Read-only Functions ────────────────────────────────────────────────────────
+;; --------- Read-only Functions ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Get service details
 (define-read-only (get-service (service-id uint))

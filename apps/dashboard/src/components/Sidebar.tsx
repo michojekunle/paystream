@@ -1,51 +1,37 @@
 "use client";
 
-import { userSession } from "../lib/stacks-session";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
-  activePage?: string;
+  online?: boolean;
+  version?: string;
+  protocol?: string;
 }
 
-export function Sidebar({ activePage = "overview" }: SidebarProps) {
-  const online = true; // Passed from parent or checked globally
+export function Sidebar({ online = true, version = "1.0.0", protocol = "x402" }: SidebarProps) {
+  const pathname = usePathname();
 
   const navItems = [
     { icon: "▦", label: "Overview", href: "/", page: "overview" },
-    { icon: "⚡", label: "Transactions", href: "#", page: "transactions" },
+    { icon: "⚡", label: "Transactions", href: "/transactions", page: "transactions" },
     { icon: "◎", label: "Streams", href: "/streams", page: "streams" },
-    { icon: "⇄", label: "Swaps", href: "#", page: "swaps" },
-    { icon: "⬡", label: "Agents", href: "#", page: "agents" },
-    { icon: "◈", label: "Contracts", href: "#", page: "contracts" },
+    { icon: "⇄", label: "Swaps", href: "/swaps", page: "swaps" },
+    { icon: "⬡", label: "Agents", href: "/agents", page: "agents" },
+    { icon: "◈", label: "Contracts", href: "/contracts", page: "contracts" },
   ];
 
+  const isActive = (href: string) => {
+    if (href === "/" && pathname === "/") return true;
+    if (href !== "/" && pathname.startsWith(href)) return true;
+    return false;
+  };
+
   return (
-    <aside
-      style={{
-        width: 220,
-        background: "var(--surface)",
-        borderRight: "1px solid var(--border)",
-        padding: "2rem 1.5rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-        position: "fixed",
-        height: "100vh",
-        overflowY: "auto",
-      }}
-      aria-label="Navigation"
-    >
+    <aside className="sidebar" aria-label="Navigation">
       {/* Logo */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.75rem",
-          color: "var(--accent)",
-          fontWeight: 700,
-          fontSize: "1rem",
-          letterSpacing: "-0.01em",
-        }}
-      >
+      <div className="sidebar-logo">
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ width: 28, height: 28 }}>
           <path d="M12 24V8h6l4 4-4 4h-6" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
           <path d="M4 16c4 0 6-4 12-4s8 4 12 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
@@ -55,29 +41,17 @@ export function Sidebar({ activePage = "overview" }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }} aria-label="Main navigation">
+      <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }} aria-label="Main navigation">
         {navItems.map((item) => (
-          <a
+          <Link
             key={item.label}
             href={item.href}
-            aria-current={activePage === item.page ? "page" : undefined}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              color: activePage === item.page ? "var(--accent)" : "var(--muted)",
-              background: activePage === item.page ? "rgba(212,146,42,0.1)" : "transparent",
-              fontSize: "0.875rem",
-              textDecoration: "none",
-              transition: "all 0.15s",
-            }}
+            className={isActive(item.href) ? "active" : ""}
+            aria-current={isActive(item.href) ? "page" : undefined}
           >
             <span aria-hidden="true">{item.icon}</span>
             {item.label}
-          </a>
+          </Link>
         ))}
       </nav>
 
@@ -85,40 +59,45 @@ export function Sidebar({ activePage = "overview" }: SidebarProps) {
       <div
         style={{
           marginTop: "auto",
-          padding: "0.75rem",
+          padding: "1rem",
           background: "rgba(255,255,255,0.03)",
-          borderRadius: "8px",
+          borderRadius: "12px",
           border: "1px solid var(--border)",
         }}
       >
-        <div style={{ fontSize: "0.75rem", marginBottom: 6, color: "var(--muted)" }}>API Server</div>
-        <div style={{ fontSize: "0.8rem", marginBottom: 12 }}>
+        <div style={{ fontSize: "0.75rem", marginBottom: 6, color: "var(--fg-dim)" }}>API Server</div>
+        <div style={{ fontSize: "0.85rem", fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
           <span
             style={{
               width: 8,
               height: 8,
               borderRadius: "50%",
-              display: "inline-block",
-              marginRight: 6,
-              background: online ? "#4aa860" : "#888",
-              boxShadow: online ? "0 0 6px #4aa860" : "none",
+              background: online ? "var(--green)" : "var(--fg-dim)",
+              boxShadow: online ? "0 0 8px var(--green)" : "none",
             }}
           />
           {online ? "Online" : "Offline"}
         </div>
         
+        {online && (
+          <div style={{ marginTop: 8, fontSize: "0.7rem", color: "var(--fg-dim)" }}>
+            v{version} · {protocol}
+          </div>
+        )}
+
         <a 
           href="https://explorer.hiro.so/sandbox/faucet?chain=testnet" 
           target="_blank" 
           rel="noopener noreferrer" 
           style={{ 
-            fontSize: "0.7rem", 
+            fontSize: "0.72rem", 
             color: "var(--accent)", 
             textDecoration: "none", 
             display: "block",
             borderTop: "1px solid var(--border)",
-            paddingTop: "0.5rem",
-            marginTop: "0.5rem"
+            paddingTop: "0.75rem",
+            marginTop: "0.75rem",
+            fontWeight: 500
           }}
         >
           Need Testnet STX? ↗

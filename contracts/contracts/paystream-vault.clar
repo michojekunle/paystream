@@ -2,22 +2,20 @@
 ;; x402 exact payment processing and proof-of-payment receipts
 ;; Handles single-shot payments with on-chain receipt storage
 
-;; ─── Constants ──────────────────────────────────────────────────────────────────
+;; --------- Constants ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-constant CONTRACT-OWNER tx-sender)
-(define-constant ERR-NOT-AUTHORIZED (err u2000))
 (define-constant ERR-PAYMENT-EXISTS (err u2001))
 (define-constant ERR-INVALID-AMOUNT (err u2002))
-(define-constant ERR-PAYMENT-NOT-FOUND (err u2003))
 
-;; ─── Data Vars ──────────────────────────────────────────────────────────────────
+;; --------- Data Vars ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-data-var payment-counter uint u0)
 (define-data-var total-volume uint u0)
 
-;; ─── Data Maps ──────────────────────────────────────────────────────────────────
+;; --------- Data Maps ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-;; Payment records — proof-of-payment on-chain
+;; Payment records --- proof-of-payment on-chain
 (define-map payments
   { payment-id: (buff 32) }
   {
@@ -49,7 +47,7 @@
   { count: uint }
 )
 
-;; ─── SIP-010 Trait ──────────────────────────────────────────────────────────────
+;; --------- SIP-010 Trait ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 (define-trait sip-010-trait
   (
@@ -63,7 +61,7 @@
   )
 )
 
-;; ─── Public Functions ───────────────────────────────────────────────────────────
+;; --------- Public Functions ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Process an x402 exact payment
 ;; Transfers tokens from payer to payee & stores receipt on-chain
@@ -91,8 +89,8 @@
         amount: amount,
         token-contract: (contract-of token),
         resource-hash: resource-hash,
-        block-height: stacks-block-height,
-        timestamp: stacks-block-height,
+        block-height: block-height,
+        timestamp: block-height,
         settled: true
       }
     )
@@ -165,8 +163,8 @@
         amount: amount,
         token-contract: CONTRACT-OWNER,
         resource-hash: resource-hash,
-        block-height: stacks-block-height,
-        timestamp: stacks-block-height,
+        block-height: block-height,
+        timestamp: block-height,
         settled: true
       }
     )
@@ -186,7 +184,7 @@
   )
 )
 
-;; ─── Read-only Functions ────────────────────────────────────────────────────────
+;; --------- Read-only Functions ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;; Verify a payment exists and get details
 (define-read-only (verify-payment (payment-id (buff 32)))

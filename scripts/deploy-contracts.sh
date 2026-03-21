@@ -33,7 +33,7 @@ echo ""
 
 # Inject mnemonic into Testnet.toml temporarily
 TESTNET_TOML="$CONTRACTS_DIR/settings/Testnet.toml"
-sed -i.bak "s|^mnemonic = \"\"$|mnemonic = \"$DEPLOYER_MNEMONIC\"|" "$TESTNET_TOML"
+sed -i.bak "s|[[:space:]]*mnemonic = \"\"$|mnemonic = \"$DEPLOYER_MNEMONIC\"|" "$TESTNET_TOML"
 
 cd "$CONTRACTS_DIR"
 

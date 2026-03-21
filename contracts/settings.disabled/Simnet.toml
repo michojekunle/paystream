@@ -1,0 +1,6 @@
+[network]
+name = "simnet"
+
+[accounts.deployer]
+mnemonic = "fetch pork are spend stage crazy script idea rest arm common filter"
+balance = 100000000000

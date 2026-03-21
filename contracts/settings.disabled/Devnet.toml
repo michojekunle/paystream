@@ -1,0 +1,22 @@
+[network]
+name = "devnet"
+
+[accounts.deployer]
+mnemonic = "fetch pork are spend stage crazy script idea rest arm common filter"
+balance = 100000000000000
+
+[accounts.wallet_1]
+mnemonic = "suit eleven certain session table unit minute holiday mention piece arrow allow"
+balance = 100000000000000
+
+[accounts.wallet_2]
+mnemonic = "vibrant current crisp boat pitch find arrow flat allow alert arrow allow"
+balance = 100000000000000
+
+[[devnet.plan]]
+id = 0
+transactions = [
+  { contract-publish = { contract-name = "paystream-vault", path = "contracts/paystream-vault.clar", clarity-version = 2, cost = 10000 } },
+  { contract-publish = { contract-name = "paystream-escrow", path = "contracts/paystream-escrow.clar", clarity-version = 2, cost = 10000 } },
+  { contract-publish = { contract-name = "paystream-registry", path = "contracts/paystream-registry.clar", clarity-version = 2, cost = 10000 } },
+]

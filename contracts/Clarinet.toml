@@ -2,6 +2,7 @@
 name = "paystream-contracts"
 description = "PayStream x402 smart contracts for Bitcoin-native micropayments"
 authors = ["PayStream Team"]
+clarity-version = 4
 
 [contracts.paystream-escrow]
 path = "contracts/paystream-escrow.clar"

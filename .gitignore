@@ -1,5 +1,6 @@
 technical_specification.md
 .env
+.env.local
 node_modules
 .next
 .turbo

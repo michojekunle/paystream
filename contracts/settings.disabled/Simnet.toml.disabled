@@ -1,0 +1,10 @@
+[network]
+name = "simnet"
+
+[accounts.deployer]
+mnemonic = "fetch pork are spend stage crazy script idea rest arm common filter"
+balance = 100000000000
+
+[accounts.wallet_1]
+mnemonic = "suit eleven certain session table unit minute holiday mention piece arrow allow"
+balance = 100000000000

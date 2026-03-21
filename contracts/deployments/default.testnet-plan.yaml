@@ -1,0 +1,31 @@
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: https://api.testnet.hiro.so
+bitcoin-node: http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332
+plan:
+  batches:
+  - id: 0
+    transactions:
+    - transaction-type: contract-publish
+      contract-name: paystream-escrow
+      expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
+      cost: 78800
+      path: contracts/paystream-escrow.clar
+      anchor-block-only: true
+      clarity-version: 1
+    - transaction-type: contract-publish
+      contract-name: paystream-registry
+      expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
+      cost: 532580
+      path: contracts/paystream-registry.clar
+      anchor-block-only: true
+      clarity-version: 1
+    - transaction-type: contract-publish
+      contract-name: paystream-vault
+      expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
+      cost: 533274
+      path: contracts/paystream-vault.clar
+      anchor-block-only: true
+      clarity-version: 1
+    epoch: '2.05'

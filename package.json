@@ -34,8 +34,8 @@
   "dependencies": {
     "@devvmichael/paystream-client": "workspace:*",
     "@devvmichael/paystream-core": "workspace:*",
-    "@stacks/network": "^6.17.0",
+    "@stacks/network": "^7.3.1",
     "@stacks/transactions": "^7.3.1",
-    "@stacks/wallet-sdk": "^7.2.0"
+    "@stacks/wallet-sdk": "^7.3.1"
   }
 }

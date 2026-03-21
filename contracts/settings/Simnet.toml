@@ -1,6 +1,6 @@
 [network]
-name = "devnet"
+name = "simnet"
 
 [accounts.deployer]
 mnemonic = "purpose immense enrich math knee size gossip knock abandon six open notice observe buffalo rack cause woman heart ball loud peasant sunny saddle adapt"
-balance = 100000000000000
+balance = 100000000000

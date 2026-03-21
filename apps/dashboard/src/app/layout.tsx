@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Sidebar } from "../components/Sidebar";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -33,7 +34,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${outfit.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <div className="dashboard">
+          <Sidebar />
+          <main className="main">{children}</main>
+        </div>
+      </body>
     </html>
   );
 }
