@@ -15,8 +15,8 @@ importers:
         specifier: workspace:*
         version: link:packages/core
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
         specifier: ^7.3.1
         version: 7.3.1
@@ -40,11 +40,11 @@ importers:
         specifier: ^8.2.6
         version: 8.2.6(@types/react@19.2.14)(lit@3.3.0)(react@19.2.4)(typescript@5.9.3)(zod@3.22.4)
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@supabase/supabase-js':
         specifier: ^2.98.0
         version: 2.98.0
@@ -126,11 +126,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       cors:
         specifier: ^2.8.5
         version: 2.8.6
@@ -169,11 +169,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
-        specifier: ^6.10.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.4)
@@ -206,11 +206,11 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       axios:
         specifier: ^1.7.0
         version: 1.13.6
@@ -235,11 +235,11 @@ importers:
         version: 1.1.1(express@4.22.1)
     devDependencies:
       '@stacks/network':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@stacks/transactions':
-        specifier: ^6.17.0
-        version: 6.17.0
+        specifier: ^7.3.1
+        version: 7.3.1
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.13
