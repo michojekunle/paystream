@@ -68,9 +68,8 @@ export class AgentWallet {
 
   /** Get the Stacks address associated with this agent's private key. */
   async getAddress(): Promise<string> {
-    const { getAddressFromPrivateKey, TransactionVersion } = await import("@stacks/transactions");
-    const version = this.network === "testnet" ? TransactionVersion.Testnet : TransactionVersion.Mainnet;
-    return getAddressFromPrivateKey(this.key, version);
+    const { getAddressFromPrivateKey } = await import("@stacks/transactions");
+    return getAddressFromPrivateKey(this.key, this.network);
   }
 
   /**
@@ -190,13 +189,9 @@ export class AgentWallet {
     let signature: string;
 
     try {
-      const { getAddressFromPrivateKey, TransactionVersion } =
+      const { getAddressFromPrivateKey } =
         await import("@stacks/transactions");
-      const version =
-        this.network === "testnet"
-          ? TransactionVersion.Testnet
-          : TransactionVersion.Mainnet;
-      fromAddress = getAddressFromPrivateKey(this.key, version);
+      fromAddress = getAddressFromPrivateKey(this.key, this.network);
 
       const { serializedTx } = await buildPaymentTransaction(
         token,

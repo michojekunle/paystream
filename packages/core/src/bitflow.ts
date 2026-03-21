@@ -105,15 +105,14 @@ export async function executeBitflowSwap(
     const {
       makeContractCall,
       broadcastTransaction,
-      AnchorMode,
       PostConditionMode,
       uintCV,
       standardPrincipalCV,
     } = await import("@stacks/transactions");
-    const { StacksTestnet, StacksMainnet } = await import("@stacks/network");
+    const { STACKS_TESTNET, STACKS_MAINNET } = await import("@stacks/network");
 
     const stacksNetwork =
-      network === "testnet" ? new StacksTestnet() : new StacksMainnet();
+      network === "testnet" ? STACKS_TESTNET : STACKS_MAINNET;
 
     // Bitflow router contract (testnet / mainnet)
     const BITFLOW_ROUTER = {
@@ -144,11 +143,10 @@ export async function executeBitflowSwap(
       ],
       senderKey: privateKey,
       network: stacksNetwork,
-      anchorMode: AnchorMode.Any,
       postConditionMode: PostConditionMode.Allow,
     });
 
-    const result = await broadcastTransaction(tx, stacksNetwork);
+    const result = await broadcastTransaction({ transaction: tx, network: stacksNetwork });
 
     if ("error" in result) {
       throw new Error(

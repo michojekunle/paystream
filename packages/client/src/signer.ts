@@ -10,13 +10,12 @@ import {
   makeSTXTokenTransfer,
   makeContractCall,
   broadcastTransaction,
-  AnchorMode,
   PostConditionMode,
   standardPrincipalCV,
   uintCV,
-  type StacksTransaction,
+  type StacksTransactionWire,
 } from "@stacks/transactions";
-import { StacksMainnet, StacksTestnet } from "@stacks/network";
+import { STACKS_MAINNET, STACKS_TESTNET } from "@stacks/network";
 import { STACKS_API_URLS, TOKEN_CONTRACTS } from "@devvmichael/paystream-core";
 import type { PaymentPayload, TokenSymbol } from "@devvmichael/paystream-core";
 import { webcrypto as crypto } from "node:crypto";
@@ -39,9 +38,9 @@ export async function buildPaymentTransaction(
   config: SignerConfig,
 ): Promise<{ serializedTx: string; txId: string }> {
   const network =
-    config.network === "testnet" ? new StacksTestnet() : new StacksMainnet();
+    config.network === "testnet" ? STACKS_TESTNET : STACKS_MAINNET;
 
-  let tx: StacksTransaction;
+  let tx: StacksTransactionWire;
 
   try {
     if (token === "STX") {
@@ -51,7 +50,6 @@ export async function buildPaymentTransaction(
         amount: BigInt(amount),
         senderKey: config.privateKey,
         network,
-        anchorMode: AnchorMode.Any,
         memo: "x402-payment",
       });
     } else {
@@ -61,9 +59,8 @@ export async function buildPaymentTransaction(
         throw new Error(`No contract found for token: ${token}`);
       }
 
-      const { getAddressFromPrivateKey, TransactionVersion } = await import("@stacks/transactions");
-      const version = config.network === "testnet" ? TransactionVersion.Testnet : TransactionVersion.Mainnet;
-      const senderAddress = getAddressFromPrivateKey(config.privateKey, version);
+      const { getAddressFromPrivateKey } = await import("@stacks/transactions");
+      const senderAddress = getAddressFromPrivateKey(config.privateKey, config.network);
 
       tx = await makeContractCall({
         contractAddress: contract.address,
@@ -77,7 +74,6 @@ export async function buildPaymentTransaction(
         ],
         senderKey: config.privateKey,
         network,
-        anchorMode: AnchorMode.Any,
         postConditionMode: PostConditionMode.Allow,
       });
     }
@@ -107,12 +103,12 @@ export async function broadcastPayment(
   network: "mainnet" | "testnet",
 ): Promise<{ txId: string }> {
   const stacksNetwork =
-    network === "testnet" ? new StacksTestnet() : new StacksMainnet();
+    network === "testnet" ? STACKS_TESTNET : STACKS_MAINNET;
 
   const { deserializeTransaction } = await import("@stacks/transactions");
   const tx = deserializeTransaction(Buffer.from(serializedTx, "hex"));
 
-  const result = await broadcastTransaction(tx, stacksNetwork);
+  const result = await broadcastTransaction({ transaction: tx, network: stacksNetwork });
 
   if ("error" in result) {
     throw new Error(`Broadcast failed: ${result.error} — ${result.reason}`);
