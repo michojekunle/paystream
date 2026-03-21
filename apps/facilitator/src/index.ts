@@ -144,15 +144,15 @@ app.post("/settle", async (req: Request, res: Response) => {
   try {
     const { deserializeTransaction, broadcastTransaction } =
       await import("@stacks/transactions");
-    const { StacksTestnet, StacksMainnet } = await import("@stacks/network");
+    const { STACKS_TESTNET, STACKS_MAINNET } = await import("@stacks/network");
 
     const stacksNetwork =
-      NETWORK === "testnet" ? new StacksTestnet() : new StacksMainnet();
+      NETWORK === "testnet" ? STACKS_TESTNET : STACKS_MAINNET;
 
     const txBytes = Buffer.from(signedTx.replace(/^0x/, ""), "hex");
     const tx = deserializeTransaction(txBytes);
 
-    const result = await broadcastTransaction(tx, stacksNetwork);
+    const result = await broadcastTransaction({ transaction: tx, network: stacksNetwork });
 
     if ("error" in result) {
       res.status(400).json({
