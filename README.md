@@ -10,9 +10,9 @@
 
 | Service | Link |
 |---|---|
-| **Landing Page** | [paystream-landing.vercel.app](https://paystream-landing.vercel.app) |
+| **Landing Page** | [paystream-home.vercel.app](https://paystream-home.vercel.app) |
 | **Merchant Dashboard** | [paystream-dashboard.vercel.app](https://paystream-dashboard.vercel.app) |
-| **Production API** | [paystream-api.onrender.com](https://paystream-api.onrender.com/health) |
+| **Production API** | [paystream-api-gr3f.onrender.com](https://paystream-api-gr3f.onrender.com/health) |
 | **npm SDKs** | [`@devvmichael/paystream-client`](https://www.npmjs.com/package/@devvmichael/paystream-client) · [`@devvmichael/paystream-server`](https://www.npmjs.com/package/@devvmichael/paystream-server) · [`@devvmichael/paystream-core`](https://www.npmjs.com/package/@devvmichael/paystream-core) |
 | **Contracts** | [`paystream-vault`](https://explorer.hiro.so/sandbox/deploy?chain=testnet) · [`paystream-escrow`](https://explorer.hiro.so/sandbox/deploy?chain=testnet) · [`paystream-registry`](https://explorer.hiro.so/sandbox/deploy?chain=testnet) |
 
