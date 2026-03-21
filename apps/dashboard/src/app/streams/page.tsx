@@ -8,8 +8,7 @@ import {
   principalCV,
   standardPrincipalCV,
   cvToValue,
-  makeStandardSTXPostCondition,
-  FungibleConditionCode,
+  Pc,
 } from "@stacks/transactions";
 import { StacksTestnet } from "@stacks/network";
 import { getUserAddress } from "../../lib/stacks-session";
@@ -142,7 +141,7 @@ export default function StreamsPage() {
           uintCV(Number(durationBlocks)),
         ],
         postConditions: [
-          makeStandardSTXPostCondition(address, FungibleConditionCode.Equal, BigInt(amount)),
+          Pc.principal(address).willSendEq(amount).ustx(),
         ],
       } as any);
       console.log("Stream created! txid:", data.txid);
