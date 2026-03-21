@@ -23,7 +23,7 @@ interface LogEntry {
   data?: any;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3402";
+const API_URL = process.env.NEXT_PUBLIC_DEMO_API_URL || "https://paystream-api-gr3f.onrender.com";
 const DEFAULT_PROMPT = "Explain the importance of x402 for AI agents.";
 
 /* ─── Components ─────────────────────────────────────────────────────────── */

@@ -10,22 +10,22 @@ plan:
     - transaction-type: contract-publish
       contract-name: paystream-escrow
       expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
-      cost: 78800
+      cost: 511053
       path: contracts/paystream-escrow.clar
       anchor-block-only: true
-      clarity-version: 1
+      clarity-version: 4
     - transaction-type: contract-publish
       contract-name: paystream-registry
       expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
-      cost: 532580
+      cost: 510054
       path: contracts/paystream-registry.clar
       anchor-block-only: true
-      clarity-version: 1
+      clarity-version: 4
     - transaction-type: contract-publish
       contract-name: paystream-vault
       expected-sender: ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2
-      cost: 533274
+      cost: 510720
       path: contracts/paystream-vault.clar
       anchor-block-only: true
-      clarity-version: 1
+      clarity-version: 4
     epoch: '2.05'

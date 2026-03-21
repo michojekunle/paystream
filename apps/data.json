@@ -8,8 +8,8 @@
       "token": "STX",
       "description": "AI text generation text",
       "status": "active",
-      "merchant": "ST<your_stacks_address>",
-      "created_at": "2026-03-20T14:17:22.683Z"
+      "merchant": "ST2H4YYS1TWNZQECBKT781N0736SYP4JA50YRSS4C",
+      "created_at": "2026-03-21T17:18:35.436Z"
     },
     {
       "id": "svc_default_2",
@@ -19,8 +19,8 @@
       "token": "STX",
       "description": "Premium article content",
       "status": "active",
-      "merchant": "ST<your_stacks_address>",
-      "created_at": "2026-03-20T14:17:22.683Z"
+      "merchant": "ST2H4YYS1TWNZQECBKT781N0736SYP4JA50YRSS4C",
+      "created_at": "2026-03-21T17:18:35.436Z"
     },
     {
       "id": "svc_default_3",
@@ -30,8 +30,8 @@
       "token": "STX",
       "description": "GPU compute job submission",
       "status": "active",
-      "merchant": "ST<your_stacks_address>",
-      "created_at": "2026-03-20T14:17:22.683Z"
+      "merchant": "ST2H4YYS1TWNZQECBKT781N0736SYP4JA50YRSS4C",
+      "created_at": "2026-03-21T17:18:35.436Z"
     },
     {
       "id": "svc_default_4",
@@ -41,8 +41,8 @@
       "token": "STX",
       "description": "Bitflow DEX swap quote",
       "status": "active",
-      "merchant": "ST<your_stacks_address>",
-      "created_at": "2026-03-20T14:17:22.683Z"
+      "merchant": "ST2H4YYS1TWNZQECBKT781N0736SYP4JA50YRSS4C",
+      "created_at": "2026-03-21T17:18:35.436Z"
     }
   ]
 }

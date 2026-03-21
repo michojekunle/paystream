@@ -41,20 +41,17 @@ cd "$CONTRACTS_DIR"
 echo "→ Running clarinet check..."
 clarinet check
 
-# Generate testnet deployment plan
-echo "→ Generating testnet deployment plan..."
-clarinet deployments generate --testnet --low-cost
-
+# Using on-disk deployment plan (preserves our custom edits to YAML, such as clarity-version: 4)
 # Apply deployment
 echo "→ Deploying contracts to testnet..."
-DEPLOY_OUTPUT=$(clarinet deployments apply --testnet 2>&1)
-echo "$DEPLOY_OUTPUT"
+clarinet deployments apply --testnet -d --no-dashboard
 
 # Restore Testnet.toml (remove mnemonic from file)
 mv "$TESTNET_TOML.bak" "$TESTNET_TOML"
 
-# Parse deployed contract addresses from output
-DEPLOYER_ADDRESS=$(echo "$DEPLOY_OUTPUT" | grep -E "ST[A-Z0-9]+" | head -1 | grep -oE "ST[A-Z0-9]+" | head -1 || echo "")
+# Parse deployed contract addresses
+# We can just hardcode the expected deployer from the plan instead of parsing hidden output
+DEPLOYER_ADDRESS="ST1HMD4QXWYE7W0MVBB9DVQGSP6WTW07SQ0244ZG2"
 
 if [ -z "$DEPLOYER_ADDRESS" ]; then
   echo "⚠️  Could not auto-detect deployer address from output."

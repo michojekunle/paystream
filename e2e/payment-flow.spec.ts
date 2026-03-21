@@ -12,7 +12,7 @@ test.describe("Full x402 Payment Flow", () => {
 
   test.beforeAll(() => {
     agent = new AgentWallet({
-      key: process.env.AGENT_PRIVATE_KEY ?? "72846d0a8d6e3cdae2f7b88df0d571f3088b9ea365666f7a627dafbccc4b22c001",
+      key: process.env.AGENT_PRIVATE_KEY ?? "507b3d76a53feb6144b6d2d3c00f9c29ce87b1e44755d911a1bcc9b3ead75bef01",
       network: "testnet",
       budget: { perTx: 50000n, perDay: 100000n }, // 50k microSTX limits
     });
