@@ -31,11 +31,11 @@ importers:
   apps/dashboard:
     dependencies:
       '@devvmichael/paystream-client':
-        specifier: ^0.1.0
-        version: 0.1.0(express@4.22.1)
+        specifier: workspace:*
+        version: link:../../packages/client
       '@devvmichael/paystream-core':
-        specifier: ^0.1.0
-        version: 0.1.0(express@4.22.1)
+        specifier: workspace:*
+        version: link:../../packages/core
       '@stacks/connect':
         specifier: ^8.2.6
         version: 8.2.6(@types/react@19.2.14)(lit@3.3.0)(react@19.2.4)(typescript@5.9.3)(zod@3.22.4)
