@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const config = {
-  output: "standalone",
+  turbopack: {
+    
+  },
   // Prevent @stacks packages (which use browser globals at module eval time)
   // from being bundled into the server build. They are loaded via next/dynamic
   // with ssr:false and must never touch the SSR/prerender worker.
