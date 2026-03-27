@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, type ReactNode } from "react";
 
-function LogoMark({
+export function LogoMark({
   className,
   style,
 }: {
@@ -504,6 +504,9 @@ export default function Home() {
                 <a href="/protocol">Protocol</a>
               </li>
               <li>
+                <a href="/roadmap">Roadmap</a>
+              </li>
+              <li>
                 <a href="/docs/developer">SDK / Dev</a>
               </li>
               <li>
@@ -548,8 +551,8 @@ export default function Home() {
             </p>
 
             <div className="hero-actions">
-              <a href="#sdk" className="btn btn-primary" id="hero-cta">
-                Get Started
+              <a href="/showcase" className="btn btn-primary" id="hero-showcase">
+                See Demo
               </a>
               <a href="#demos" className="btn btn-ghost" id="hero-demos">
                 Interactive Sandbox
@@ -782,7 +785,10 @@ export default function Home() {
                 <h2 id="demos-title">See the x402 protocol in action</h2>
                 <p style={{ margin: "var(--s4) auto 0" }}>
                   Real requests to real endpoints. Start the demo server, then
-                  click a card to trigger an actual 402 → pay → 200 flow.
+                  click a card to trigger an actual 402 → pay → 200 flow.{" "}
+                  <a href="/showcase" style={{ color: "var(--accent)", textDecoration: "underline", opacity: 0.8 }}>
+                    Test the full AI Showcase →
+                  </a>
                 </p>
               </div>
               <div className="demos">

@@ -73,7 +73,7 @@ if (!MERCHANT) {
 app.use(helmet());
 
 const allowedOrigins = (
-  process.env.ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:3001"
+  process.env.ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:3001,https://paystream-home.vercel.app"
 )
   .split(",")
   .map((o) => o.trim())

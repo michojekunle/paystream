@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { AgentWallet } from "@devvmichael/paystream-client";
+import { LogoMark } from "../page";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 
@@ -23,20 +24,8 @@ interface LogEntry {
   data?: any;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_DEMO_API_URL || "https://paystream-api-gr3f.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_DEMO_API_URL || "";
 const DEFAULT_PROMPT = "Explain the importance of x402 for AI agents.";
-
-/* ─── Components ─────────────────────────────────────────────────────────── */
-
-function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 24V8h6l4 4-4 4h-6" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-      <path d="M4 16c4 0 6-4 12-4s8 4 12 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M4 21c4 0 6-4 12-4s8 4 12 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 export default function ShowcasePage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
