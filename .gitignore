@@ -9,3 +9,5 @@ node_modules
 .npm-cache
 .pnpm-cache
 dist
+.playwright-report
+.playwright-mcp
